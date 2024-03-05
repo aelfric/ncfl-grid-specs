@@ -1,0 +1,18 @@
+[versions]
+poi = "5.2.5"
+log4j = "2.23.0"
+h2 = "2.2.224"
+fasterxmlJackson = "2.16.1"
+
+
+[libraries]
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "fasterxmlJackson" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "fasterxmlJackson" }
+jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "fasterxmlJackson" }
+poi = { module = "org.apache.poi:poi", version.ref="poi" }
+poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref="poi" }
+log4j-core = { module="org.apache.logging.log4j:log4j-core", version.ref="log4j"}
+h2 = {module="com.h2database:h2", version.ref="h2"}
+
+[bundles]
+jackson = ["jackson-core", "jackson-databind", "jackson-jsr310"]
