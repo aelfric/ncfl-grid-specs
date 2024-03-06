@@ -7,17 +7,23 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import j2html.tags.DomContent;
+import j2html.tags.specialized.LiTag;
 import org.apache.poi.ss.usermodel.*;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static j2html.TagCreator.*;
+
 
 public class App {
     static ObjectMapper objectMapper = new ObjectMapper()
@@ -34,26 +40,33 @@ public class App {
 
     public static void slurp(Path inputFile) {
         try (
-            InputStream inputStream = new FileInputStream("D:\\Downloads\\NCFL 2024 " +
-                "Competition Space Grid.xlsx");
+            InputStream inputStream = new FileInputStream("/home/fricc/Dropbox/4N6/NCFL 2024 Competition Space Grid.xlsx");
             Workbook wb = WorkbookFactory.create(inputStream);
         ) {
 
-            Sheet hiltonChicago = wb.getSheet("Hilton Chicago");
-            slurp(hiltonChicago);
+            Files.writeString(Paths.get("output.html"),
+                body(h1("Hilton Chicago"))
+                    .with(slurp(wb.getSheet("Hilton Chicago")))
+                    .with(h1("Palmer House"))
+                    .with(slurp(wb.getSheet("Palmer House")))
+                    .render(),
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE
+            );
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static List<String> slurpHeaders(Row row){
+    public static List<String> slurpHeaders(Row row) {
         List<String> headers = new ArrayList<>();
         for (Cell cell : row) {
             headers.add(cell.toString());
         }
         return Collections.unmodifiableList(headers);
     }
-    public static void slurp(Sheet sheet) {
+
+    public static List<DomContent> slurp(Sheet sheet) {
         List<String> headers = slurpHeaders(sheet.getRow(0));
         List<RoomUsage> data = StreamSupport.stream(sheet.spliterator(), true)
             .skip(1)
@@ -71,23 +84,27 @@ public class App {
                 }
             })
             .filter(Objects::nonNull)
+            .filter(roomUsage -> roomUsage.start() != null && roomUsage.activity() != null)
             .toList();
 
-        filterAndPrintRooms("Saturday Room Sets", data, DayOfWeek.SATURDAY);
+        data.stream().map(RoomUsage::roomSet).distinct().forEach(System.out::println);
 
-        filterAndPrintRooms("Sunday Room Sets", data, DayOfWeek.SUNDAY);
+        return List.of(
+            filterAndPrintRooms("Saturday Room Sets", data, DayOfWeek.SATURDAY),
+            filterAndPrintRooms("Sunday Room Sets", data, DayOfWeek.SUNDAY)
+        );
     }
 
-    private static void filterAndPrintRooms(String title,
-                                            List<RoomUsage> data,
-                                            DayOfWeek saturday) {
-        System.out.println(title);
+    private static DomContent filterAndPrintRooms(String title,
+                                                  List<RoomUsage> data,
+                                                  DayOfWeek dayOfWeek) {
         Map<RoomID, List<RoomUsage>> saturdayRoomMap = data
             .stream()
-            .filter(u -> u.day() == saturday)
+            .filter(u -> u.day() == dayOfWeek)
             .collect(Collectors.groupingBy(RoomUsage::key));
 
-        printRoomUsages(saturdayRoomMap);
+        return section(h2(title))
+            .with(printRoomUsages(saturdayRoomMap));
     }
 
     private static Map<String, String> slurpRow(Row row, List<String> headers) {
@@ -109,8 +126,7 @@ public class App {
                         }
                     }
                     case BLANK -> datum.put(key, "");
-                    case BOOLEAN ->
-                        datum.put(key, Boolean.toString(cell.getBooleanCellValue()));
+                    case BOOLEAN -> datum.put(key, Boolean.toString(cell.getBooleanCellValue()));
                     default -> System.out.println("WARNING ignoring cell" + cell);
                 }
             }
@@ -118,31 +134,55 @@ public class App {
         return datum;
     }
 
-    private static void printRoomUsages(Map<RoomID, List<RoomUsage>> roomMap) {
-        for (Map.Entry<RoomID, List<RoomUsage>> entry : roomMap.entrySet()) {
-            System.out.println("\t" + entry.getKey().name());
-            for (RoomUsage roomUsage : entry.getValue()) {
-                System.out.printf(
-                    "\t\t[%s - %s] %s (%s)%n",
-                    roomUsage.start(),
-                    roomUsage.end(),
-                    roomUsage.roomSet(),
-                    roomUsage.activity()
-                );
-            }
-        }
+    private static Stream<DomContent> printRoomUsages(Map<RoomID, List<RoomUsage>> roomMap) {
+        return roomMap
+            .entrySet()
+            .stream()
+            .sorted(Comparator.comparing(
+                (Map.Entry<RoomID, List<RoomUsage>> roomIDListEntry) ->
+                    roomIDListEntry.getKey().name()))
+            .map(App::roomUsageDiv);
     }
 
-    static class MyProblemHandler extends DeserializationProblemHandler{
+    private static DomContent roomUsageDiv(Map.Entry<RoomID, List<RoomUsage>> entry) {
+        return div(h3(entry.getKey().name()))
+            .with(
+                ul()
+                    .with(
+                        entry
+                            .getValue()
+                            .stream()
+                            .map(roomUsage -> {
+                                final LiTag li = li(
+                                    span("[%s - %s] ".formatted(roomUsage.start(), roomUsage.end())),
+                                    text(roomUsage.roomSet()),
+                                    text(" ("),
+                                    text(roomUsage.activity()),
+                                    text(")")
+                                );
+                                if(roomUsage.notes()!=null){
+                                    return li.with(
+                                        br(),
+                                        i(roomUsage.notes())
+                                    );
+                                } else {
+                                    return li;
+                                }
+                            })
+                    )
+            );
+    }
+
+    static class MyProblemHandler extends DeserializationProblemHandler {
         @Override
         public Object handleWeirdStringValue(DeserializationContext ctx,
                                              Class<?> targetType,
                                              String valueToConvert,
                                              String failureMsg) throws IOException {
-            if((targetType == Boolean.class || targetType == boolean.class) && ("Yes".equalsIgnoreCase(valueToConvert))){
-                    return true;
+            if ((targetType == Boolean.class || targetType == boolean.class) && ("Yes".equalsIgnoreCase(valueToConvert))) {
+                return true;
             }
-            if(targetType == DayOfWeek.class && valueToConvert != null && !valueToConvert.isEmpty()){
+            if (targetType == DayOfWeek.class && valueToConvert != null && !valueToConvert.isEmpty()) {
                 return DayOfWeek.valueOf(valueToConvert.toUpperCase());
             }
             return super.handleWeirdStringValue(ctx, targetType, valueToConvert, failureMsg);

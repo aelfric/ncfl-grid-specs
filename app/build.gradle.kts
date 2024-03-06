@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.log4j.core)
     implementation(libs.h2)
     implementation(libs.bundles.jackson)
+    implementation(libs.j2html)
 }
 
 testing {
