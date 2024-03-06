@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import j2html.tags.DomContent;
 import j2html.tags.specialized.LiTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
@@ -26,22 +28,20 @@ import static j2html.TagCreator.*;
 
 
 public class App {
+    protected static final Logger logger = LogManager.getLogger();
+
     static ObjectMapper objectMapper = new ObjectMapper()
         .registerModule(new JavaTimeModule())
         .addHandler(new MyProblemHandler());
 
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
-        slurp(Paths.get("."));
+        slurp(Paths.get("/home/fricc/Dropbox/4N6/NCFL 2024 Competition Space Grid.xlsx"));
     }
 
     public static void slurp(Path inputFile) {
         try (
-            InputStream inputStream = new FileInputStream("/home/fricc/Dropbox/4N6/NCFL 2024 Competition Space Grid.xlsx");
-            Workbook wb = WorkbookFactory.create(inputStream);
+            InputStream inputStream = new FileInputStream(inputFile.toFile());
+            Workbook wb = WorkbookFactory.create(inputStream)
         ) {
 
             Files.writeString(Paths.get("output.html"),
@@ -54,7 +54,7 @@ public class App {
                 StandardOpenOption.CREATE
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Could not read input file", e);
         }
     }
 
@@ -79,15 +79,13 @@ public class App {
                         return null;
                     }
                 } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                    logger.error("Could not read row", e);
                     return null;
                 }
             })
             .filter(Objects::nonNull)
             .filter(roomUsage -> roomUsage.start() != null && roomUsage.activity() != null)
             .toList();
-
-        data.stream().map(RoomUsage::roomSet).distinct().forEach(System.out::println);
 
         return List.of(
             filterAndPrintRooms("Saturday Room Sets", data, DayOfWeek.SATURDAY),
@@ -127,7 +125,7 @@ public class App {
                     }
                     case BLANK -> datum.put(key, "");
                     case BOOLEAN -> datum.put(key, Boolean.toString(cell.getBooleanCellValue()));
-                    default -> System.out.println("WARNING ignoring cell" + cell);
+                    default -> logger.warn("ignoring cell {}", cell);
                 }
             }
         }
