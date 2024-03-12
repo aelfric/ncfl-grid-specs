@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.h2)
     implementation(libs.bundles.jackson)
     implementation(libs.j2html)
+    testImplementation(libs.hamcrest)
 }
 
 testing {

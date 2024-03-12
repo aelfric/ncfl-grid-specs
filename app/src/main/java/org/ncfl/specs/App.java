@@ -124,7 +124,8 @@ public class App {
                         }
                     }
                     case BLANK -> datum.put(key, "");
-                    case BOOLEAN -> datum.put(key, Boolean.toString(cell.getBooleanCellValue()));
+                    case BOOLEAN ->
+                        datum.put(key, Boolean.toString(cell.getBooleanCellValue()));
                     default -> logger.warn("ignoring cell {}", cell);
                 }
             }
@@ -136,9 +137,13 @@ public class App {
         return roomMap
             .entrySet()
             .stream()
-            .sorted(Comparator.comparing(
-                (Map.Entry<RoomID, List<RoomUsage>> roomIDListEntry) ->
-                    roomIDListEntry.getKey().name()))
+            .sorted(
+                Comparator.comparing(
+                    (Map.Entry<RoomID, List<RoomUsage>> roomIDListEntry) ->
+                        roomIDListEntry.getKey().name(),
+                    AlphaNumComparator.ALPHANUM
+                )
+            )
             .map(App::roomUsageDiv);
     }
 
@@ -152,7 +157,8 @@ public class App {
                             .stream()
                             .map(roomUsage -> {
                                 final LiTag li = li(
-                                    span("[%s - %s] ".formatted(roomUsage.start(), roomUsage.end())),
+                                    span("[%s - %s] ".formatted(roomUsage.start(),
+                                        roomUsage.end())),
                                     a(String.valueOf(roomUsage.roomSet()))
                                         .attr("href",
                                             Objects.requireNonNullElse(roomUsage.roomSet(),
@@ -161,7 +167,7 @@ public class App {
                                     text(roomUsage.activity()),
                                     text(")")
                                 );
-                                if(roomUsage.notes()!=null){
+                                if (roomUsage.notes() != null) {
                                     return li.with(
                                         br(),
                                         i(roomUsage.notes())
@@ -180,7 +186,8 @@ public class App {
                                              Class<?> targetType,
                                              String valueToConvert,
                                              String failureMsg) throws IOException {
-            if ((targetType == Boolean.class || targetType == boolean.class) && ("Yes".equalsIgnoreCase(valueToConvert))) {
+            if ((targetType == Boolean.class || targetType == boolean.class) && ("Yes".equalsIgnoreCase(
+                valueToConvert))) {
                 return true;
             }
             if (targetType == DayOfWeek.class && valueToConvert != null && !valueToConvert.isEmpty()) {

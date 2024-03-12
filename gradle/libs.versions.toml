@@ -4,6 +4,7 @@ log4j = "2.23.0"
 h2 = "2.2.224"
 fasterxmlJackson = "2.16.1"
 j2html = "1.6.0"
+hamcrest = "2.2"
 
 
 [libraries]
@@ -15,6 +16,7 @@ poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref="poi" }
 log4j-core = { module="org.apache.logging.log4j:log4j-core", version.ref="log4j"}
 h2 = {module="com.h2database:h2", version.ref="h2"}
 j2html = {module="com.j2html:j2html", version.ref="j2html"}
+hamcrest = {module="org.hamcrest:hamcrest", version.ref="hamcrest"}
 
 [bundles]
 jackson = ["jackson-core", "jackson-databind", "jackson-jsr310"]
