@@ -35,7 +35,7 @@ public class App {
         .addHandler(new MyProblemHandler());
 
     public static void main(String[] args) {
-        slurp(Paths.get("/home/fricc/Dropbox/4N6/NCFL 2024 Competition Space Grid.xlsx"));
+        slurp(Paths.get(args[0]));
     }
 
     public static void slurp(Path inputFile) {
@@ -153,7 +153,10 @@ public class App {
                             .map(roomUsage -> {
                                 final LiTag li = li(
                                     span("[%s - %s] ".formatted(roomUsage.start(), roomUsage.end())),
-                                    text(roomUsage.roomSet()),
+                                    a(String.valueOf(roomUsage.roomSet()))
+                                        .attr("href",
+                                            Objects.requireNonNullElse(roomUsage.roomSet(),
+                                                RoomSet.SPECIAL_OTHER).href()),
                                     text(" ("),
                                     text(roomUsage.activity()),
                                     text(")")

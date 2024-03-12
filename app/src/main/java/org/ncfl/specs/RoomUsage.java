@@ -17,7 +17,7 @@ public record RoomUsage(
     @JsonProperty("Start") LocalTime start,
     @JsonProperty("End") LocalTime end,
     @JsonProperty("Publish") boolean publish,
-    @JsonProperty("Room Set") String roomSet,
+    @JsonProperty("Room Set") RoomSet roomSet,
     @JsonProperty("A/V Needs") String avNeeds,
     @JsonProperty("Room Turn ?") String isRoomTurn, // TODO should be boolean
     @JsonProperty("Notes") String notes
