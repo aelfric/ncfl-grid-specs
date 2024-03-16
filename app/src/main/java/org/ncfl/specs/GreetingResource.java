@@ -1,5 +1,6 @@
 package org.ncfl.specs;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.reactive.RestForm;
@@ -7,6 +8,13 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @Path("/")
 public class GreetingResource {
+
+    private final RoomSpecReport roomSpecReport;
+
+    @Inject
+    public GreetingResource(RoomSpecReport roomSpecReport) {
+        this.roomSpecReport = roomSpecReport;
+    }
 
     @Path("/hello")
     @GET
@@ -20,6 +28,6 @@ public class GreetingResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_HTML)
     public String upload(@RestForm("file") FileUpload file) {
-        return App.slurp(file.uploadedFile().toFile());
+        return roomSpecReport.slurp(file.uploadedFile().toFile());
     }
 }
