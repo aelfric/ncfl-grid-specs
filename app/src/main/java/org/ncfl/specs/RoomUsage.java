@@ -20,7 +20,8 @@ public record RoomUsage(
     @JsonProperty("Room Set") RoomSet roomSet,
     @JsonProperty("A/V Needs") String avNeeds,
     @JsonProperty("Room Turn ?") String isRoomTurn, // TODO should be boolean
-    @JsonProperty("Notes") String notes
+    @JsonProperty("Hotel Notes") String hotelNotes,
+    @JsonProperty("Internal Notes") String internalNotes
 ) {
     public RoomID key() {
         return new RoomID(venue, floor, name);

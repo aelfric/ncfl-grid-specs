@@ -167,10 +167,10 @@ public class App {
                                     text(roomUsage.activity()),
                                     text(")")
                                 );
-                                if (roomUsage.notes() != null) {
+                                if (roomUsage.hotelNotes() != null) {
                                     return li.with(
                                         br(),
-                                        i(roomUsage.notes())
+                                        i(roomUsage.hotelNotes())
                                     );
                                 } else {
                                     return li;
