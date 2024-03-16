@@ -13,11 +13,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,27 +35,24 @@ public class App {
         .addHandler(new MyProblemHandler());
 
     public static void main(String[] args) {
-        slurp(Paths.get(args[0]));
+        slurp(Paths.get(args[0]).toFile());
     }
 
-    public static void slurp(Path inputFile) {
+    public static String slurp(File file) {
         try (
-            InputStream inputStream = new FileInputStream(inputFile.toFile());
+            InputStream inputStream = new FileInputStream(file);
             Workbook wb = WorkbookFactory.create(inputStream)
         ) {
 
-            Files.writeString(Paths.get("output.html"),
-                body(h1("Hilton Chicago"))
-                    .with(slurp(wb.getSheet("Hilton Chicago")))
-                    .with(h1("Palmer House"))
-                    .with(slurp(wb.getSheet("Palmer House")))
-                    .render(),
-                StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.CREATE
-            );
+            return body(h1("Hilton Chicago"))
+                .with(slurp(wb.getSheet("Hilton Chicago")))
+                .with(h1("Palmer House"))
+                .with(slurp(wb.getSheet("Palmer House")))
+                .render();
         } catch (IOException e) {
             logger.error("Could not read input file", e);
         }
+        return "";
     }
 
     public static List<String> slurpHeaders(Row row) {

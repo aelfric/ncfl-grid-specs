@@ -6,10 +6,18 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-plugins {
-    // Apply the foojay-resolver plugin to allow automatic download of JDKs
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
-}
-
 rootProject.name = "ncfl-specs-gen"
 include("app")
+pluginManagement {
+    val quarkusPluginVersion: String by settings
+    val quarkusPluginId: String by settings
+
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    plugins {
+        id(quarkusPluginId) version quarkusPluginVersion
+    }
+}
