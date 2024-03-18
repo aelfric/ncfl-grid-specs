@@ -1,43 +1,25 @@
 package org.ncfl.specs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import j2html.tags.DomContent;
 import j2html.tags.specialized.BodyTag;
 import j2html.tags.specialized.LiTag;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.time.DayOfWeek;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static j2html.TagCreator.*;
 
 
-@Singleton
-public class RoomSpecReport {
+public class RoomSpecReport implements Reporter {
     protected static final Logger logger = LogManager.getLogger();
-    private final SpreadsheetHandler spreadsheetHandler;
 
-    ObjectMapper objectMapper;
-
-    @Inject
-    public RoomSpecReport(ObjectMapper mapper, SpreadsheetHandler spreadsheetHandler) {
-        this.objectMapper = mapper;
-        this.spreadsheetHandler = spreadsheetHandler;
-    }
-
-    public String slurp(File file) {
-        final List<Hotel> hotels = spreadsheetHandler.getHotelRoomUsage(file);
+    public String process(List<Hotel> hotelRoomUsage) {
         BodyTag body = body();
-        for (Hotel hotel : hotels) {
+        for (Hotel hotel : hotelRoomUsage) {
             body = body
                 .with(h1(hotel.name()))
                 .with(
@@ -54,13 +36,48 @@ public class RoomSpecReport {
     private DomContent filterAndPrintRooms(String title,
                                            List<RoomUsage> data,
                                            DayOfWeek dayOfWeek) {
-        Map<RoomID, List<RoomUsage>> saturdayRoomMap = data
+        Map<RoomID, List<RoomUsage>> roomMap = data
             .stream()
             .filter(u -> u.day() == dayOfWeek)
             .collect(Collectors.groupingBy(RoomUsage::key));
 
         return section(h2(title))
-            .with(printRoomUsages(saturdayRoomMap));
+            .with(printRoomUsages(dedupeCubicles(roomMap)));
+    }
+
+    private Map<RoomID, List<RoomUsage>> dedupeCubicles(Map<RoomID, List<RoomUsage>> roomMap) {
+        final HashMap<RoomID, List<RoomUsage>> map = new HashMap<>(roomMap.size());
+        for (Map.Entry<RoomID, List<RoomUsage>> entry : roomMap.entrySet()) {
+            final RoomID roomID = entry.getKey();
+            if(roomID.name().contains("-")) {
+                RoomID newKey = new RoomID(roomID.venue(), roomID.floor(), roomID.name()
+                    .substring(0, roomID.name().indexOf("-")));
+                map.compute(newKey, (roomID1, roomUsages) -> {
+                    if(roomUsages == null){
+                        return entry.getValue();
+                    }
+                    final ArrayList<RoomUsage> newRoomUsages = new ArrayList<>();
+                    newRoomUsages.addAll(roomUsages);
+                    newRoomUsages.addAll(entry.getValue());
+                    return newRoomUsages;
+                });
+            } else if (roomID.name().contains("Cubicle")){
+                RoomID newKey = new RoomID(roomID.venue(), roomID.floor(), roomID.name()
+                    .substring(0, roomID.name().indexOf("Cubicle")));
+                map.compute(newKey, (roomID1, roomUsages) -> {
+                    if(roomUsages == null){
+                        return entry.getValue();
+                    }
+                    final ArrayList<RoomUsage> newRoomUsages = new ArrayList<>();
+                    newRoomUsages.addAll(roomUsages);
+                    newRoomUsages.addAll(entry.getValue());
+                    return newRoomUsages;
+                });
+            } else {
+                map.put(roomID, entry.getValue());
+            }
+        }
+        return map;
     }
 
 
