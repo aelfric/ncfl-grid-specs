@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,8 +25,13 @@ public class RoomSpecReport implements Reporter {
                 .with(h1(hotel.name()))
                 .with(
                     List.of(
-                        filterAndPrintRooms("Saturday Room Sets", hotel.roomUsage(), DayOfWeek.SATURDAY),
-                        filterAndPrintRooms("Sunday Room Sets", hotel.roomUsage(), DayOfWeek.SUNDAY)
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.MONDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.TUESDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.WEDNESDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.THURSDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.FRIDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.SATURDAY),
+                        filterAndPrintRooms(hotel.roomUsage(), DayOfWeek.SUNDAY)
                     )
                 );
         }
@@ -33,15 +39,14 @@ public class RoomSpecReport implements Reporter {
     }
 
 
-    private DomContent filterAndPrintRooms(String title,
-                                           List<RoomUsage> data,
+    private DomContent filterAndPrintRooms(List<RoomUsage> data,
                                            DayOfWeek dayOfWeek) {
         Map<RoomID, List<RoomUsage>> roomMap = data
             .stream()
             .filter(u -> u.day() == dayOfWeek)
             .collect(Collectors.groupingBy(RoomUsage::key));
 
-        return section(h2(title))
+        return section(h2("%s Room Sets".formatted(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.US))))
             .with(printRoomUsages(dedupeCubicles(roomMap)));
     }
 

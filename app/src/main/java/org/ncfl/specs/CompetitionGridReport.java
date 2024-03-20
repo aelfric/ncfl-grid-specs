@@ -13,6 +13,19 @@ import static j2html.TagCreator.tr;
 import static j2html.TagCreator.table;
 
 public class CompetitionGridReport implements Reporter {
+
+    private record GridRow(
+        String Prelims,
+        String PlayIn,
+        String Doubles,
+        String Octos,
+        String Quarters,
+        String Semis,
+        String Finals
+    ){
+
+    }
+
     @Override
     public String process(List<Hotel> hotelList) {
         return table()
@@ -50,6 +63,7 @@ public class CompetitionGridReport implements Reporter {
             .stream()
             .map(RoomUsage::activity)
             .distinct()
+            .map(activity -> activity.replaceAll("#\\d+", "Prelim"))
             .collect(Collectors.joining(","));
     }
 
