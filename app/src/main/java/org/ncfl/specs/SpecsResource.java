@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Path("/")
-public class GreetingResource {
+@Produces(MediaType.TEXT_HTML)
+public class SpecsResource {
 
     private final Reporter roomSpecReport;
     private final Reporter competitionGridReport;
@@ -23,7 +24,7 @@ public class GreetingResource {
     private final SpreadsheetHandler spreadsheetHandler;
 
     @Inject
-    public GreetingResource(@CacheName("room-grid") Cache hotelCache1, SpreadsheetHandler spreadsheetHandler) {
+    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, SpreadsheetHandler spreadsheetHandler) {
         this.hotelCache = hotelCache1;
         this.spreadsheetHandler = spreadsheetHandler;
         this.competitionGridReport = new CompetitionGridReport();
@@ -64,4 +65,5 @@ public class GreetingResource {
     public CompletableFuture<String> grid(){
         return getTheGrid().thenApply(competitionGridReport::process);
     }
+
 }
