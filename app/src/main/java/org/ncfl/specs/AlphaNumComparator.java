@@ -120,8 +120,8 @@ public final class AlphaNumComparator
     public int compare(final String string1, final String string2) {
         int thisMarker = 0;
         int thatMarker = 0;
-        final int s1Length = string1.length();
-        final int s2Length = string2.length();
+        final int s1Length = string1 == null ? 0 : string1.length();
+        final int s2Length = string2 == null ? 0 : string2.length();
 
         while (thisMarker < s1Length && thatMarker < s2Length) {
             final String thisChunk

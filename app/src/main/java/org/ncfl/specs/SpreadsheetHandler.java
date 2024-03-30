@@ -53,12 +53,11 @@ public class SpreadsheetHandler {
                         return null;
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.error("Could not read row", e);
+                    logger.error("Could not read row {}", datum, e);
                     return null;
                 }
             })
             .filter(Objects::nonNull)
-            .filter(roomUsage -> roomUsage.start() != null && roomUsage.activity() != null)
             .toList();
         return new Hotel(hotelName, roomUsages);
     }
