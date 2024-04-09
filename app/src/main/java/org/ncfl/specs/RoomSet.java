@@ -1,7 +1,7 @@
 package org.ncfl.specs;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import j2html.tags.DomContent;
+import j2html.tags.specialized.UlTag;
 import jakarta.annotation.Nonnull;
 
 import static j2html.TagCreator.li;
@@ -188,9 +188,9 @@ public enum RoomSet {
     private final String url;
 
     @Nonnull
-    private final DomContent description;
+    private final UlTag description;
 
-    RoomSet(String url, String title, @Nonnull DomContent description) {
+    RoomSet(String url, String title, @Nonnull UlTag description) {
         this.url = url;
         this.title = title;
         this.description = description;
@@ -204,7 +204,7 @@ public enum RoomSet {
         return title;
     }
 
-    public DomContent description() {
+    public UlTag description() {
         return description;
     }
 

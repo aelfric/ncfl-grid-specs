@@ -4,6 +4,8 @@ import j2html.TagCreator;
 import j2html.tags.DomContent;
 import j2html.tags.Text;
 import j2html.tags.specialized.BodyTag;
+import j2html.tags.specialized.DivTag;
+import j2html.tags.specialized.LiTag;
 import jakarta.annotation.Nonnull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +38,7 @@ public class RoomSpecReport implements Reporter {
                     getReaderBoards(hotel)
                 )
                 .with(
-                   getAVNeeds(hotel)
+                    getAVNeeds(hotel)
                 )
                 .with(
                     getCateringNeeds(hotel)
@@ -68,7 +70,7 @@ public class RoomSpecReport implements Reporter {
                     .with(text(u.getKey().format(dayFormatter)))
                     .with(ul().with(
                         u.getValue().stream()
-                            .sorted(Comparator.comparing(RoomUsage::name, 
+                            .sorted(Comparator.comparing(RoomUsage::name,
                                 AlphaNumComparator.ALPHANUM))
                             .map(this::readerBoard)
                     ))
@@ -114,7 +116,8 @@ public class RoomSpecReport implements Reporter {
         Stream<DomContent> stream = hotel
             .roomUsage()
             .stream()
-            .filter(roomUsage -> roomUsage.catering() != null && !roomUsage.catering().isEmpty())
+            .filter(roomUsage -> roomUsage.catering() != null && !roomUsage.catering()
+                .isEmpty())
             .collect(Collectors.groupingBy(RoomUsage::date))
             .entrySet()
             .stream()
@@ -166,6 +169,7 @@ public class RoomSpecReport implements Reporter {
         Map<RoomID, List<RoomUsage>> roomMap = data
             .stream()
             .filter(u -> localDate.equals(u.date()))
+            .filter(u -> Objects.nonNull(u.activity()) && !u.activity().isEmpty())
             .collect(Collectors.groupingBy(RoomUsage::key));
 
         if (roomMap.isEmpty()) {
@@ -240,86 +244,79 @@ public class RoomSpecReport implements Reporter {
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparing(e -> e.getKey().start()))
-                .map(
-                    e -> {
-                        final WhenAndWhat key = e.getKey();
-                        final List<RoomUsage> usages = e.getValue();
-                        final RoomSet roomSet = Objects.requireNonNullElse(
-                            key.roomSet(),
-                            RoomSet.SPECIAL_OTHER
-                        );
-                        final Set<String> notes = usages.stream()
-                            .map(RoomUsage::hotelNotes)
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toSet());
+                .map(RoomSpecReport::formatRoomUsage);
+    }
 
-                        final DomContent
-                            notesHtml =
-                            notes.isEmpty() ? text("") : ul().with(notes.stream()
-                                .map(TagCreator::li));
+    private static DivTag formatRoomUsage(Map.Entry<WhenAndWhat, List<RoomUsage>> e) {
+        final WhenAndWhat key = e.getKey();
+        final List<RoomUsage> usages = e.getValue();
+        final RoomSet roomSet = Objects.requireNonNullElse(
+            key.roomSet(),
+            RoomSet.SPECIAL_OTHER
+        );
+        final Stream<DomContent> notes = usages.stream()
+            .map(RoomUsage::hotelNotes)
+            .filter(n -> n != null && !n.isEmpty())
+            .distinct()
+            .map(TagCreator::li);
 
-                        final Text
-                            timeRange =
-                            text("%s - %s ".formatted(key.start(), key.end()));
-                        if (usages.size() == 1) {
-                            return
-                                div(
-                                    p(
-                                        timeRange,
-                                        a(String.valueOf(roomSet))
-                                            .attr("href", roomSet.href()),
-                                        text(" (%s)".formatted(usages.get(0).activity()))
-                                    ),
-                                    ul(
-                                        li(
-                                            strong("Room Setup:"),
-                                            roomSet.description()
-                                        )
-                                    )
-                                        .with(
-                                            usages.get(0).publish() ? li(
-                                                strong("Readerboard: "),
-                                                text(usages.get(0).activity())
-                                            ) : text(""),
-                                            usages.get(0).avNeeds() != null ? li(
-                                                strong("A/V Needs: "),
-                                                text(usages.get(0).avNeeds())
-                                            ) : text(""),
-                                            usages.get(0).catering() != null && !usages.get(0).catering().isEmpty() ? li(
-                                                strong("Catering Needs: "),
-                                                text("[TO FILL IN]")
-                                            ) : text("")
-                                        ),
-                                    notesHtml
-                                );
-                        } else {
-                            return
-                                div(
-                                    p(
-                                        timeRange,
-                                        a(String.valueOf(roomSet))
-                                            .attr("href", roomSet.href())
-                                    ),
-                                    ul(
-                                        li(
-                                            strong("Room Setup:"),
-                                            roomSet.description()
-                                        ),
-                                        li(strong("Activities"),
-                                            ul()
-                                                .with(
-                                                    usages.stream()
-                                                        .map(RoomUsage::activity)
-                                                        .sorted(AlphaNumComparator.ALPHANUM)
-                                                        .map(TagCreator::li)
-                                                )
-                                        )
-                                    ),
-                                    notesHtml
-                                );
-                        }
-                    }
-                );
+        final Text
+            timeRange =
+            text("%s - %s ".formatted(key.start(), key.end()));
+        if (usages.size() == 1) {
+            return div(
+                p(
+                    timeRange,
+                    a(String.valueOf(roomSet))
+                        .attr("href", roomSet.href()),
+                    text(" (%s)".formatted(usages.get(0).activity()))
+                ),
+                ul(
+                    li(
+                        strong("Room Setup:"),
+                        roomSet.description().with(notes)
+                    )
+                )
+                    .with(
+                        usages.get(0).publish() ? li(
+                            strong("Readerboard: "),
+                            text(usages.get(0).activity())
+                        ) : text(""),
+                        usages.get(0).avNeeds() != null ? li(
+                            strong("A/V Needs: "),
+                            text(usages.get(0).avNeeds())
+                        ) : text(""),
+                        usages.get(0).catering() != null && !usages.get(0)
+                            .catering().isEmpty() ? li(
+                            strong("Catering Needs: "),
+                            text("[TO FILL IN]")
+                        ) : text("")
+                    )
+            );
+        } else {
+            return div(
+                p(
+                    timeRange,
+                    a(String.valueOf(roomSet))
+                        .attr("href", roomSet.href())
+                ),
+                ul(
+                    li(
+                        strong("Room Setup:"),
+                        roomSet.description().with(notes)
+                    ),
+                    li(strong("Activities"),
+                        ul()
+                            .with(
+                                usages.stream()
+                                    .map(RoomUsage::activity)
+                                    .sorted(AlphaNumComparator.ALPHANUM)
+                                    .map(TagCreator::li)
+                            )
+                    )
+                )
+            );
+        }
     }
 
 }
