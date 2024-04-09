@@ -18,16 +18,34 @@ public enum RoomSet {
             li("Microphone"),
             li("Schoolroom seating for 250")
         )),
-    @JsonAlias({"Special - Office  (NCFL/Local CFl Office)", "Special - Office"}) SPECIAL_OFFICE(null,
+    @JsonAlias({"Special - Extemp Prep Saturday"})
+    SPECIAL_EXT_PREP_SATURDAY(null,
+        "Special - Extemp Prep Saturday",
+        ul(
+            li("Head Table for 12"),
+            li("Microphone"),
+            li("Schoolroom seating for 250")
+        )),
+    @JsonAlias({"Special - Extemp Prep Sunday"})
+    SPECIAL_EXT_PREP_SUNDAY(null,
+        "Special - Extemp Prep Sunday",
+        ul( // TODO
+            li("Head Table for 12"),
+            li("Microphone"),
+            li("Schoolroom seating for 250")
+        )),
+    @JsonAlias({"Special - Office  (NCFL/Local CFl Office)", "Special - Office"}) SPECIAL_OFFICE(
+        null,
         "Special - Office",
         ul(
             li("Schoolroom tables around perimeter of room - as many as you can fit"),
             li("8 chairs stacked in corner")
         )
     ),
-     @JsonAlias("Special - Conference (Equity / Protest)") SPECIAL_EQUITY_PROTEST(null,
-         "Special - Equity / Protest",
-         ul(
+    @JsonAlias({"Special - Conference (Equity / Protest)", "Special - Conference"}) SPECIAL_EQUITY_PROTEST(
+        null,
+        "Special - Equity / Protest",
+        ul(
             li("Conference table for 8"),
             li("2 schoolroom tables against the wall (if they fit)")
         )
@@ -41,7 +59,8 @@ public enum RoomSet {
             li("Two schoolroom tables with chairs at back of room, behind theater seating")
         )
     ),
-    @JsonAlias({"Special - Speech Workroom (Speech Tab & Registration Room)", "Special - Speech Workroom"}) SPECIAL_WORKROOM_1(null,
+    @JsonAlias({"Special - Speech Workroom (Speech Tab & Registration Room)", "Special - Speech Workroom"}) SPECIAL_WORKROOM_1(
+        null,
         "Special - Speech Workroom",
         ul(
             li("Schoolroom tables around perimeter of room - as many as you can fit"),
@@ -49,7 +68,8 @@ public enum RoomSet {
             li("Eight 60” rounds with 6 chairs each")
         )
     ),
-    @JsonAlias({"Special - Debate Workroom (Cong, PF, LD, Pol Tab Rooms)", "Special - Debate Workroom"}) SPECIAL_WORKROOM_2(null,
+    @JsonAlias({"Special - Debate Workroom (Cong, PF, LD, Pol Tab Rooms)", "Special - Debate Workroom"}) SPECIAL_WORKROOM_2(
+        null,
         "Special - Debate Workroom",
         ul(
             li("Schoolroom tables around perimeter of room - as many as you can fit"),
@@ -60,10 +80,17 @@ public enum RoomSet {
     @JsonAlias("Special - Postings Party") SPECIAL_POSTINGS_PARTY(null,
         "Special - Postings Party",
         ul(li("Set up TBA"))),
-    @JsonAlias("Special - Postings Prep") SPECIAL_POSTINGS_PREP(null, "Special - Postings Prep", ul(li("Set up TBA"))),
-    @JsonAlias("Special - Meeting") SPECIAL_MEETING(null, "Special - Meeting", ul(li("Set up TBA"))),
+    @JsonAlias("Special - Postings Prep") SPECIAL_POSTINGS_PREP(null,
+        "Special - Postings Prep",
+        ul(li("Set up TBA"))),
+    @JsonAlias("Special - Meeting") SPECIAL_MEETING(null,
+        "Special - Meeting",
+        ul(li("Set up TBA"))),
     @JsonAlias("Special - MASS") SPECIAL_MASS(null, "Special - MASS", ul(li("Set up TBA"))),
-    @SuppressWarnings("SpellCheckingInspection") @JsonAlias({"Special - Conference", "Special - Coference"}) SPECIAL_CONFERENCE(null, "Special - Conference", ul(li("Set up TBA"))),
+    @SuppressWarnings("SpellCheckingInspection") @JsonAlias({"Special - Conference", "Special - Coference"}) SPECIAL_CONFERENCE(
+        null,
+        "Special - Conference",
+        ul(li("Set up TBA"))),
 
     @JsonAlias("Special - Awards") SPECIAL_AWARDS(null, "Special - Awards",
         ul(
@@ -84,11 +111,13 @@ public enum RoomSet {
         li("Three schoolroom tables with one chair each facing head table."),
         li("One row of theater seating behind judges table")
     )),
-    @JsonAlias("Debate Prelim - Conference") DEBATE_PRELIM_CONFERENCE(null, "Debate Prelim - Conference", ul(
-        li("Two head tables, side by side with a space between them. Two chairs at each"),
-        li("Three schoolroom tables with one chair each facing head table."),
-        li("One row of theater seating behind judges table")
-    )),
+    @JsonAlias("Debate Prelim - Conference") DEBATE_PRELIM_CONFERENCE(null,
+        "Debate Prelim - Conference",
+        ul(
+            li("Two head tables, side by side with a space between them. Two chairs at each"),
+            li("Three schoolroom tables with one chair each facing head table."),
+            li("One row of theater seating behind judges table")
+        )),
     @JsonAlias("Debate Prelim - Cubicle") DEBATE_PRELIM_CUBICLE(null,
         "Debate Prelim - Cubicle",
         ul(

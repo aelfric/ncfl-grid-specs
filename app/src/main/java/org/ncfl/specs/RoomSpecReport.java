@@ -20,7 +20,9 @@ import static j2html.TagCreator.*;
 
 public class RoomSpecReport implements Reporter {
     protected static final Logger logger = LogManager.getLogger();
-    private static final DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEE, MMM dd");
+    private static final DateTimeFormatter
+        dayFormatter =
+        DateTimeFormatter.ofPattern("EEE, MMM dd");
 
     public String process(List<Hotel> hotelRoomUsage) {
         BodyTag body = body();
@@ -28,19 +30,134 @@ public class RoomSpecReport implements Reporter {
             body = body
                 .with(h1(hotel.name()))
                 .with(
-                    List.of(
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 21)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 22)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 23)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 24)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 25)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 26)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 27)),
-                        filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 28))
-                    )
+                    getAVNeeds(hotel)
+                )
+                .with(
+                    getReaderBoards(hotel)
+                )
+                .with(
+                   getAVNeeds(hotel)
+                )
+                .with(
+                    getCateringNeeds(hotel)
+                )
+                .with(
+                    h2("All-Gender Restrooms"),
+                    p("Please designate at least one public restroom as an all-gender " +
+                        "restroom and let me know where it is so I can post it on our " +
+                        "communications document.")
+                )
+                .with(
+                    getRoomSets(hotel)
                 );
         }
         return body.render();
+    }
+
+    private List<DomContent> getReaderBoards(Hotel hotel) {
+        Stream<DomContent> stream = hotel
+            .roomUsage()
+            .stream()
+            .filter(RoomUsage::publish)
+            .collect(Collectors.groupingBy(RoomUsage::date))
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(
+                u -> ul()
+                    .with(text(u.getKey().format(dayFormatter)))
+                    .with(ul().with(
+                        u.getValue().stream()
+                            .sorted(Comparator.comparing(RoomUsage::name, 
+                                AlphaNumComparator.ALPHANUM))
+                            .map(this::readerBoard)
+                    ))
+            );
+
+
+        return List.of(
+            h2("Readerboard"),
+            ul().with(stream));
+    }
+
+    private List<DomContent> getAVNeeds(Hotel hotel) {
+        Stream<DomContent> stream = hotel
+            .roomUsage()
+            .stream()
+            .filter(roomUsage -> roomUsage.avNeeds() != null)
+            .collect(Collectors.groupingBy(RoomUsage::date))
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(
+                u -> ul()
+                    .with(text(u.getKey().format(dayFormatter)))
+                    .with(ul().with(
+                        u.getValue().stream()
+                            .sorted(Comparator.comparing(RoomUsage::name,
+                                AlphaNumComparator.ALPHANUM))
+                            .map(roomUsage -> li(
+                                strong(roomUsage.name()),
+                                text(": "),
+                                text(roomUsage.avNeeds())
+                            ))
+                    ))
+            );
+
+
+        return List.of(
+            h2("A/V Needs"),
+            ul().with(stream));
+    }
+
+    private List<DomContent> getCateringNeeds(Hotel hotel) {
+        Stream<DomContent> stream = hotel
+            .roomUsage()
+            .stream()
+            .filter(roomUsage -> roomUsage.catering() != null && !roomUsage.catering().isEmpty())
+            .collect(Collectors.groupingBy(RoomUsage::date))
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .map(
+                u -> ul()
+                    .with(text(u.getKey().format(dayFormatter)))
+                    .with(ul().with(
+                        u.getValue().stream()
+                            .sorted(Comparator.comparing(RoomUsage::name,
+                                AlphaNumComparator.ALPHANUM))
+                            .map(roomUsage -> li(
+                                strong(roomUsage.name()),
+                                text(": [TO FILL IN]")
+                            ))
+                    ))
+            );
+
+
+        return List.of(
+            h2("Catering Needs"),
+            ul().with(stream));
+    }
+
+    private DomContent readerBoard(RoomUsage roomUsage) {
+        return li(
+            strong(roomUsage.name()),
+            text(": "),
+            text(roomUsage.activity())
+        );
+    }
+
+    private List<DomContent> getRoomSets(Hotel hotel) {
+        return List.of(
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 21)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 22)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 23)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 24)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 25)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 26)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 27)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 28))
+        );
     }
 
 
@@ -83,7 +200,8 @@ public class RoomSpecReport implements Reporter {
         return map;
     }
 
-    private static List<RoomUsage> mergeUsages(Map.Entry<RoomID, List<RoomUsage>> entry, List<RoomUsage> roomUsages) {
+    private static List<RoomUsage> mergeUsages(Map.Entry<RoomID, List<RoomUsage>> entry,
+                                               List<RoomUsage> roomUsages) {
         if (roomUsages == null) {
             return entry.getValue();
         }
@@ -135,14 +253,18 @@ public class RoomSpecReport implements Reporter {
                             .filter(Objects::nonNull)
                             .collect(Collectors.toSet());
 
-                        final DomContent notesHtml = notes.isEmpty() ? text("") : ul().with(notes.stream()
-                            .map(TagCreator::li));
+                        final DomContent
+                            notesHtml =
+                            notes.isEmpty() ? text("") : ul().with(notes.stream()
+                                .map(TagCreator::li));
 
-                        final Text timeRange = text("%s - %s ".formatted(key.start(), key.end()));
+                        final Text
+                            timeRange =
+                            text("%s - %s ".formatted(key.start(), key.end()));
                         if (usages.size() == 1) {
                             return
                                 div(
-                                    h4(
+                                    p(
                                         timeRange,
                                         a(String.valueOf(roomSet))
                                             .attr("href", roomSet.href()),
@@ -153,13 +275,27 @@ public class RoomSpecReport implements Reporter {
                                             strong("Room Setup:"),
                                             roomSet.description()
                                         )
-                                    ),
+                                    )
+                                        .with(
+                                            usages.get(0).publish() ? li(
+                                                strong("Readerboard: "),
+                                                text(usages.get(0).activity())
+                                            ) : text(""),
+                                            usages.get(0).avNeeds() != null ? li(
+                                                strong("A/V Needs: "),
+                                                text(usages.get(0).avNeeds())
+                                            ) : text(""),
+                                            usages.get(0).catering() != null && !usages.get(0).catering().isEmpty() ? li(
+                                                strong("Catering Needs: "),
+                                                text("[TO FILL IN]")
+                                            ) : text("")
+                                        ),
                                     notesHtml
                                 );
                         } else {
                             return
                                 div(
-                                    h4(
+                                    p(
                                         timeRange,
                                         a(String.valueOf(roomSet))
                                             .attr("href", roomSet.href())

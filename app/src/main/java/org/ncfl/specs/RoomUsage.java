@@ -21,6 +21,7 @@ public record RoomUsage(
     @JsonProperty("Publish") boolean publish,
     @JsonProperty("Room Set") RoomSet roomSet,
     @JsonProperty("A/V Needs") String avNeeds,
+    @JsonProperty("Catering ?") String catering,
     @JsonProperty("Room Turn ?") String isRoomTurn, // TODO should be boolean
     @JsonProperty("Hotel Notes") String hotelNotes,
     @JsonProperty("Internal Notes") String internalNotes
