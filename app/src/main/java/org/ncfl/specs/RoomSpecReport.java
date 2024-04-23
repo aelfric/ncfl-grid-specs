@@ -38,9 +38,6 @@ public class RoomSpecReport implements Reporter {
                     getReaderBoards(hotel)
                 )
                 .with(
-                    getAVNeeds(hotel)
-                )
-                .with(
                     getCateringNeeds(hotel)
                 )
                 .with(
@@ -66,7 +63,7 @@ public class RoomSpecReport implements Reporter {
             .stream()
             .sorted(Map.Entry.comparingByKey())
             .map(
-                u -> ul()
+                u -> li()
                     .with(text(u.getKey().format(dayFormatter)))
                     .with(ul().with(
                         u.getValue().stream()
@@ -92,18 +89,21 @@ public class RoomSpecReport implements Reporter {
             .stream()
             .sorted(Map.Entry.comparingByKey())
             .map(
-                u -> ul()
+                u -> li()
                     .with(text(u.getKey().format(dayFormatter)))
-                    .with(ul().with(
-                        u.getValue().stream()
-                            .sorted(Comparator.comparing(RoomUsage::name,
-                                AlphaNumComparator.ALPHANUM))
-                            .map(roomUsage -> li(
-                                strong(roomUsage.name()),
-                                text(": "),
-                                text(roomUsage.avNeeds())
-                            ))
-                    ))
+                    .with(
+                        ul()
+                            .with(
+                                u.getValue().stream()
+                                    .sorted(Comparator.comparing(RoomUsage::name,
+                                        AlphaNumComparator.ALPHANUM))
+                                    .map(roomUsage -> li(
+                                        strong(roomUsage.name()),
+                                        text(": "),
+                                        text(roomUsage.avNeeds())
+                                    ))
+                            )
+                    )
             );
 
 
@@ -123,7 +123,7 @@ public class RoomSpecReport implements Reporter {
             .stream()
             .sorted(Map.Entry.comparingByKey())
             .map(
-                u -> ul()
+                u -> li()
                     .with(text(u.getKey().format(dayFormatter)))
                     .with(ul().with(
                         u.getValue().stream()
@@ -254,11 +254,12 @@ public class RoomSpecReport implements Reporter {
             key.roomSet(),
             RoomSet.SPECIAL_OTHER
         );
-        final Stream<DomContent> notes = usages.stream()
+        final List<LiTag> notes = usages.stream()
             .map(RoomUsage::hotelNotes)
             .filter(n -> n != null && !n.isEmpty())
             .distinct()
-            .map(TagCreator::li);
+            .map(TagCreator::li)
+            .toList();
 
         final Text
             timeRange =
@@ -311,6 +312,7 @@ public class RoomSpecReport implements Reporter {
                                 usages.stream()
                                     .map(RoomUsage::activity)
                                     .sorted(AlphaNumComparator.ALPHANUM)
+                                    .distinct()
                                     .map(TagCreator::li)
                             )
                     )

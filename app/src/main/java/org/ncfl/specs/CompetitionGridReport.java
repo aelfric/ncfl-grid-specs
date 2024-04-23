@@ -3,10 +3,7 @@ package org.ncfl.specs;
 import j2html.tags.DomContent;
 import j2html.tags.specialized.TrTag;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,8 +111,9 @@ public class CompetitionGridReport implements Reporter {
     private static String getActivities(List<RoomUsage> value) {
         return value
             .stream()
+            .filter(usage -> Objects.nonNull(usage.activity()))
             .map(usage -> {
-                if(usage.roomSet() == RoomSet.SPEECH_PRELIM || usage.roomSet() == RoomSet.DEBATE_PRELIM || usage.roomSet()==RoomSet.CONGRESS_PRELIM) {
+                if(usage.roomSet() != null && usage.roomSet().isPrelim()) {
                     return usage.activity().replaceAll("#\\d+", "Prelim");
                 } else {
                     return usage.activity();

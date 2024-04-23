@@ -3,6 +3,7 @@ package org.ncfl.specs;
 import j2html.TagCreator;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static j2html.TagCreator.ul;
@@ -15,7 +16,7 @@ public class ScheduleReport implements Reporter {
                 .stream()
                 .flatMap(h -> h.roomUsage().stream())
                 .flatMap(usage -> {
-                    var activity = usage.activity();
+                    var activity = Objects.requireNonNullElse(usage.activity(), "");
                     return Stream.of(activity.split(","))
                         .map(a -> usage.day() + " " + usage.start() + " " + usage.end() + " " + a);
                 })
