@@ -97,14 +97,14 @@ public class CompetitionGridReport implements Reporter {
 
         }
         return List.of(
-            td(prelims.toString()),
-            td(playIn.toString()),
-            td(doubles.toString()),
-            td(octos.toString()),
-            td(quarters.toString()),
-            td(semis.toString()),
-            td(finals.toString()),
-            td(unknown.toString())
+            td(String.join(", ", prelims)),
+            td(String.join(", ", playIn)),
+            td(String.join(", ", doubles)),
+            td(String.join(", ", octos)),
+            td(String.join(", ", quarters)),
+            td(String.join(", ", semis)),
+            td(String.join(", ", finals)),
+            td(String.join(", ", unknown))
         );
     }
 

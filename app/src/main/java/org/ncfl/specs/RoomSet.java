@@ -9,6 +9,9 @@ import java.util.function.Supplier;
 import static j2html.TagCreator.li;
 import static j2html.TagCreator.ul;
 
+// TODO in the future should be able to recognize "existing set" when the room setup does not
+//      change between usages
+
 @SuppressWarnings("java:S1192")
 public enum RoomSet {
     @JsonAlias({"Special - Extemp Prep Saturday"})
