@@ -88,7 +88,7 @@ public class RoomSpecReport implements Reporter {
         Stream<DomContent> stream = hotel
             .roomUsage()
             .stream()
-            .filter(roomUsage -> roomUsage.avNeeds() != null)
+            .filter(roomUsage -> roomUsage.avNeeds() != null && !roomUsage.avNeeds().isBlank())
             .collect(Collectors.groupingBy(RoomUsage::date))
             .entrySet()
             .stream()
@@ -288,7 +288,7 @@ public class RoomSpecReport implements Reporter {
                             strong("Readerboard: "),
                             text(usages.get(0).activity())
                         ) : text(""),
-                        usages.get(0).avNeeds() != null ? li(
+                        (usages.get(0).avNeeds() != null && !usages.get(0).avNeeds().isBlank()) ? li(
                             strong("A/V Needs: "),
                             text(usages.get(0).avNeeds())
                         ) : text(""),

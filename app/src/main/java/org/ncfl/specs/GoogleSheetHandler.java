@@ -1,0 +1,161 @@
+package org.ncfl.specs;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.ValueRange;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.model.RoomUsage;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.*;
+
+@Singleton
+public class GoogleSheetHandler {
+    protected static final Logger logger = LogManager.getLogger();
+    final ObjectMapper objectMapper;
+
+    final String sheetId;
+
+    @Inject
+    public GoogleSheetHandler(
+        ObjectMapper objectMapper,
+        @ConfigProperty(name = "google.sheet-id") String sheetId
+    ) {
+        this.objectMapper = objectMapper;
+        this.sheetId = sheetId;
+    }
+
+    public Uni<List<Hotel>> getHotelRoomUsage() {
+        return Uni
+            .createFrom()
+            .item(this::doSomething)
+            .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
+    }
+
+    private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
+    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    /**
+     * Global instance of the scopes required by this quickstart.
+     * If modifying these scopes, delete your previously saved tokens/ folder.
+     */
+    private static final List<String> SCOPES =
+        Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
+    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    /**
+     * Creates an authorized Credential object.
+     *
+     * @param HTTP_TRANSPORT The network HTTP Transport.
+     * @return An authorized Credential object.
+     * @throws IOException If the credentials.json file cannot be found.
+     */
+    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
+        throws IOException {
+        // Load client secrets.
+        InputStream in = GoogleSheetHandler.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
+        }
+        GoogleClientSecrets clientSecrets =
+            GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+            .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+            .setAccessType("offline")
+            .build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    }
+
+    public List<Hotel> doSomething() {
+        try {
+            // Build a new authorized API client service.
+            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            Sheets service =
+                new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+            return List.of(
+                getHotel(service, "Hilton Chicago!A1:P", "Hilton Chicago"),
+                getHotel(service, "Palmer House!A1:P", "Palmer House")
+            );
+        } catch (IOException | GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Hotel getHotel(Sheets service, String range, String hotelName) throws IOException {
+        ValueRange response = service.spreadsheets().values()
+            .get(sheetId, range)
+            .execute();
+        List<List<Object>> values = response.getValues();
+        List<RoomUsage> data;
+        if (values == null || values.isEmpty()) {
+            logger.warn("No data found.");
+            data = Collections.emptyList();
+        } else {
+            List<String> headers = values.get(0).stream().map(Object::toString).toList();
+
+            data = values.parallelStream()
+                .skip(1)
+                .map(row -> {
+                    final Map<String, String> datum = rowToMap(row, headers);
+
+                    try {
+                        if (!datum.getOrDefault("Day", "").isEmpty()) {
+                            logger.info("Record: {}", datum);
+                            return objectMapper.convertValue(datum, RoomUsage.class);
+                        } else {
+                            return null;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.error("Could not read row {}", datum, e);
+                        return null;
+                    }
+
+                })
+                .filter(Objects::nonNull)
+                .toList();
+        }
+        return new Hotel(hotelName, data);
+    }
+
+    private static Map<String, String> rowToMap(List<Object> row, List<String> headers) {
+        Map<String, String> datum = new HashMap<>();
+        for (int i = 0; i < headers.size(); i++) {
+            try {
+                datum.put(headers.get(i), row.get(i).toString());
+            } catch (IndexOutOfBoundsException e) {
+                // ignore
+            }
+        }
+        return datum;
+    }
+
+
+}

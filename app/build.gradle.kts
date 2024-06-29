@@ -37,6 +37,9 @@ dependencies {
     implementation(libs.log4j.core)
     implementation(libs.h2)
     implementation(libs.j2html)
+    implementation(libs.google.api.client)
+    implementation(libs.google.api.sheets)
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1") // TODO needed?
 
     testImplementation(libs.hamcrest)
     testImplementation ("io.quarkus:quarkus-junit5")

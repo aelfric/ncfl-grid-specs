@@ -4,12 +4,9 @@
         integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
         crossorigin="anonymous"></script>
 
-<form id='form' hx-encoding='multipart/form-data' hx-post='/upload' hx-swap="innerHTML" hx-target="#result">
-    <input type='file' name='file'>
-    <button>
-        Upload
-    </button>
-</form>
+<button hx-post="/refresh"  hx-swap="innerHTML" hx-target="#result">
+    Refresh
+</button>
 <a href="#" hx-get="/sched" hx-swap="innerHTML" hx-target="#result" >Schedule</a>
 <a href="#" hx-get="/specs" hx-swap="innerHTML" hx-target="#result" >Specs</a>
 <a href="#" hx-get="/grid" hx-swap="innerHTML" hx-target="#result" >Grid</a>

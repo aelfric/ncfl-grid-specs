@@ -16,7 +16,6 @@ import org.ncfl.specs.reports.RoomSpecReport;
 import org.ncfl.specs.reports.ScheduleReport;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Path("/")
 @Produces(MediaType.TEXT_HTML)
@@ -27,14 +26,16 @@ public class SpecsResource {
     private final Reporter scheduleReport;
     private final io.quarkus.cache.Cache hotelCache;
     private final SpreadsheetHandler spreadsheetHandler;
+    private final GoogleSheetHandler googleSheetHandler;
 
     @Inject
-    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, SpreadsheetHandler spreadsheetHandler) {
+    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, SpreadsheetHandler spreadsheetHandler, GoogleSheetHandler googleSheetHandler) {
         this.hotelCache = hotelCache1;
         this.spreadsheetHandler = spreadsheetHandler;
         this.competitionGridReport = new CompetitionGridReport();
         this.roomSpecReport = new RoomSpecReport();
         this.scheduleReport = new ScheduleReport();
+        this.googleSheetHandler = googleSheetHandler;
     }
 
     @Path("/upload")
@@ -42,33 +43,45 @@ public class SpecsResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_HTML)
     public Uni<String> upload(@RestForm("file") FileUpload file) {
-        return hotelCache.get("the grid", key ->
-                spreadsheetHandler.getHotelRoomUsage(file.uploadedFile().toFile())
+        return hotelCache.getAsync("the grid", key ->
+                googleSheetHandler.getHotelRoomUsage()
             )
             .map(roomSpecReport::process);
     }
 
-    @Path("/specs")
-    @GET
-    public CompletableFuture<String> specs(){
-        return getTheGrid().thenApply(roomSpecReport::process);
+    @Path("/refresh")
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    public Uni<String> refresh() {
+        return hotelCache.invalidate("the grid").chain(()->
+            hotelCache.getAsync("the grid", key ->
+                googleSheetHandler.getHotelRoomUsage()
+            )
+            .map(roomSpecReport::process));
     }
 
-    private CompletableFuture<List<Hotel>> getTheGrid() {
-        return hotelCache.as(CaffeineCache.class)
-            .getIfPresent("the grid");
+    @Path("/specs")
+    @GET
+    public Uni<String> specs(){
+        return getTheGrid().map(roomSpecReport::process).onSubscription().invoke(googleSheetHandler::doSomething);
+    }
+
+    private Uni<List<Hotel>> getTheGrid() {
+        return Uni.createFrom().completionStage(
+        hotelCache.as(CaffeineCache.class)
+            .getIfPresent("the grid"));
     }
 
     @Path("/sched")
     @GET
-    public CompletableFuture<String> schedule(){
-        return getTheGrid().thenApply(scheduleReport::process);
+    public Uni<String> schedule(){
+        return getTheGrid().map(scheduleReport::process);
     }
 
     @Path("/grid")
     @GET
-    public CompletableFuture<String> grid(){
-        return getTheGrid().thenApply(competitionGridReport::process);
+    public Uni<String> grid(){
+        return getTheGrid().map(competitionGridReport::process);
     }
 
 }
