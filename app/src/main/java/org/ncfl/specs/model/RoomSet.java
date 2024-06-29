@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import j2html.tags.specialized.UlTag;

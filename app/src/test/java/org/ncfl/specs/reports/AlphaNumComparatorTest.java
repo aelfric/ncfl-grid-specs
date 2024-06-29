@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import org.junit.jupiter.api.Test;
 

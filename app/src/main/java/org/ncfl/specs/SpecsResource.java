@@ -9,6 +9,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.reports.CompetitionGridReport;
+import org.ncfl.specs.reports.Reporter;
+import org.ncfl.specs.reports.RoomSpecReport;
+import org.ncfl.specs.reports.ScheduleReport;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -1,7 +1,10 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import j2html.tags.DomContent;
 import j2html.tags.specialized.TrTag;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.model.RoomID;
+import org.ncfl.specs.model.RoomUsage;
 
 import java.util.*;
 import java.util.stream.Collectors;

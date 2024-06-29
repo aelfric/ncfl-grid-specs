@@ -6,6 +6,9 @@ import jakarta.inject.Singleton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.model.RoomUsage;
+import org.ncfl.specs.reports.RoomSpecReport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +37,7 @@ public class SpreadsheetHandler {
                 getRoomUsages("Hilton Chicago", wb)
             );
         } catch (IOException e) {
-            RoomSpecReport.logger.error("Could not read input file", e);
+            logger.error("Could not read input file", e);
             throw new RuntimeException("Could not read input file");
         }
     }

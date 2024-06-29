@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import j2html.TagCreator;
 import j2html.tags.DomContent;
@@ -9,6 +9,11 @@ import j2html.tags.specialized.LiTag;
 import jakarta.annotation.Nonnull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ncfl.specs.model.WhenAndWhat;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.model.RoomID;
+import org.ncfl.specs.model.RoomSet;
+import org.ncfl.specs.model.RoomUsage;
 
 import java.time.LocalDate;
 import java.time.Month;
