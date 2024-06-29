@@ -1,8 +1,6 @@
-package org.ncfl.specs;
+package org.ncfl.specs.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import j2html.tags.specialized.UlTag;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

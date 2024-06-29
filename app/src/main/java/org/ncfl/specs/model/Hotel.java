@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.model;
 
 import java.util.List;
 
