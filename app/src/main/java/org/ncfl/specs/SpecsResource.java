@@ -5,10 +5,11 @@ import io.quarkus.cache.CacheName;
 import io.quarkus.cache.CaffeineCache;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.jboss.resteasy.reactive.RestForm;
-import org.jboss.resteasy.reactive.multipart.FileUpload;
 import org.ncfl.specs.model.Hotel;
 import org.ncfl.specs.reports.CompetitionGridReport;
 import org.ncfl.specs.reports.Reporter;
@@ -25,36 +26,24 @@ public class SpecsResource {
     private final Reporter competitionGridReport;
     private final Reporter scheduleReport;
     private final io.quarkus.cache.Cache hotelCache;
-    private final SpreadsheetHandler spreadsheetHandler;
     private final GoogleSheetHandler googleSheetHandler;
+    private final String GRID_CACHE_KEY = "the grid";
 
     @Inject
-    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, SpreadsheetHandler spreadsheetHandler, GoogleSheetHandler googleSheetHandler) {
+    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, GoogleSheetHandler googleSheetHandler) {
         this.hotelCache = hotelCache1;
-        this.spreadsheetHandler = spreadsheetHandler;
         this.competitionGridReport = new CompetitionGridReport();
         this.roomSpecReport = new RoomSpecReport();
         this.scheduleReport = new ScheduleReport();
         this.googleSheetHandler = googleSheetHandler;
     }
 
-    @Path("/upload")
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_HTML)
-    public Uni<String> upload(@RestForm("file") FileUpload file) {
-        return hotelCache.getAsync("the grid", key ->
-                googleSheetHandler.getHotelRoomUsage()
-            )
-            .map(roomSpecReport::process);
-    }
-
     @Path("/refresh")
     @POST
     @Produces(MediaType.TEXT_HTML)
     public Uni<String> refresh() {
-        return hotelCache.invalidate("the grid").chain(()->
-            hotelCache.getAsync("the grid", key ->
+        return hotelCache.invalidate(GRID_CACHE_KEY).chain(()->
+            hotelCache.getAsync(GRID_CACHE_KEY, key ->
                 googleSheetHandler.getHotelRoomUsage()
             )
             .map(roomSpecReport::process));
@@ -69,7 +58,7 @@ public class SpecsResource {
     private Uni<List<Hotel>> getTheGrid() {
         return Uni.createFrom().completionStage(
         hotelCache.as(CaffeineCache.class)
-            .getIfPresent("the grid"));
+            .getIfPresent(GRID_CACHE_KEY));
     }
 
     @Path("/sched")

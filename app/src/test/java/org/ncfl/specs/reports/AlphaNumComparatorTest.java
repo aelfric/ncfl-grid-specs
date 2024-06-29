@@ -10,6 +10,7 @@ import static org.hamcrest.number.OrderingComparison.*;
 class AlphaNumComparatorTest {
     Comparator<String> comparator =  AlphaNumComparator.ALPHANUM;
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     void testCompare() {
         assertThat(comparator.compare("A", "A"), comparesEqualTo(0));

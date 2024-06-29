@@ -26,7 +26,6 @@ import static j2html.TagCreator.*;
 
 
 public class RoomSpecReport implements Reporter {
-    protected static final Logger logger = LogManager.getLogger();
     private static final DateTimeFormatter
         dayFormatter =
         DateTimeFormatter.ofPattern("EEE, MMM dd");

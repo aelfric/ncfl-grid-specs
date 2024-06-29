@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.ncfl.specs.model.Hotel;
 import org.ncfl.specs.model.RoomUsage;
-import org.ncfl.specs.reports.RoomSpecReport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +26,7 @@ public class SpreadsheetHandler {
         this.objectMapper = objectMapper;
     }
 
+    @SuppressWarnings("unused")
     public List<Hotel> getHotelRoomUsage(File file) {
         try (
             InputStream inputStream = new FileInputStream(file);
