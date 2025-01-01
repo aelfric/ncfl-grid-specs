@@ -1,7 +1,7 @@
 [versions]
 poi = "5.2.5"
 log4j = "2.23.0"
-h2 = "2.2.224"
+h2 = "2.3.232"
 fasterxmlJackson = "2.16.1"
 j2html = "1.6.0"
 hamcrest = "2.2"
