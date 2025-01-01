@@ -4,7 +4,7 @@ log4j = "2.23.0"
 h2 = "2.2.224"
 fasterxmlJackson = "2.16.1"
 j2html = "1.6.0"
-hamcrest = "2.2"
+hamcrest = "3.0"
 
 
 [libraries]
