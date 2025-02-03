@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +10,7 @@ import static org.hamcrest.number.OrderingComparison.*;
 class AlphaNumComparatorTest {
     Comparator<String> comparator =  AlphaNumComparator.ALPHANUM;
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     void testCompare() {
         assertThat(comparator.compare("A", "A"), comparesEqualTo(0));

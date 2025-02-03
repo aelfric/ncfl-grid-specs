@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import j2html.TagCreator;
 import j2html.tags.DomContent;
@@ -9,6 +9,11 @@ import j2html.tags.specialized.LiTag;
 import jakarta.annotation.Nonnull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ncfl.specs.model.WhenAndWhat;
+import org.ncfl.specs.model.Hotel;
+import org.ncfl.specs.model.RoomID;
+import org.ncfl.specs.model.RoomSet;
+import org.ncfl.specs.model.RoomUsage;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,7 +26,6 @@ import static j2html.TagCreator.*;
 
 
 public class RoomSpecReport implements Reporter {
-    protected static final Logger logger = LogManager.getLogger();
     private static final DateTimeFormatter
         dayFormatter =
         DateTimeFormatter.ofPattern("EEE, MMM dd");
@@ -83,7 +87,7 @@ public class RoomSpecReport implements Reporter {
         Stream<DomContent> stream = hotel
             .roomUsage()
             .stream()
-            .filter(roomUsage -> roomUsage.avNeeds() != null)
+            .filter(roomUsage -> roomUsage.avNeeds() != null && !roomUsage.avNeeds().isBlank())
             .collect(Collectors.groupingBy(RoomUsage::date))
             .entrySet()
             .stream()
@@ -283,7 +287,7 @@ public class RoomSpecReport implements Reporter {
                             strong("Readerboard: "),
                             text(usages.get(0).activity())
                         ) : text(""),
-                        usages.get(0).avNeeds() != null ? li(
+                        (usages.get(0).avNeeds() != null && !usages.get(0).avNeeds().isBlank()) ? li(
                             strong("A/V Needs: "),
                             text(usages.get(0).avNeeds())
                         ) : text(""),

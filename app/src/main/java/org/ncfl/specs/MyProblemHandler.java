@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
 
 class MyProblemHandler extends DeserializationProblemHandler {
     @Override
@@ -18,6 +21,9 @@ class MyProblemHandler extends DeserializationProblemHandler {
         }
         if (targetType == DayOfWeek.class && valueToConvert != null && !valueToConvert.isEmpty()) {
             return DayOfWeek.valueOf(valueToConvert.toUpperCase());
+        }
+        if (targetType == LocalDate.class && valueToConvert != null && !valueToConvert.isEmpty()) {
+            return MonthDay.parse(valueToConvert, DateTimeFormatter.ofPattern("MMMM dd")).atYear(2024);
         }
         return super.handleWeirdStringValue(ctx, targetType, valueToConvert, failureMsg);
     }

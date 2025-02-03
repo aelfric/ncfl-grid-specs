@@ -5,6 +5,8 @@ h2 = "2.2.224"
 fasterxmlJackson = "2.16.1"
 j2html = "1.6.0"
 hamcrest = "2.2"
+googleApi = "2.0.0"
+googleSheetsApi = "v4-rev20220927-2.0.0"
 
 
 [libraries]
@@ -17,6 +19,8 @@ log4j-core = { module="org.apache.logging.log4j:log4j-core", version.ref="log4j"
 h2 = {module="com.h2database:h2", version.ref="h2"}
 j2html = {module="com.j2html:j2html", version.ref="j2html"}
 hamcrest = {module="org.hamcrest:hamcrest", version.ref="hamcrest"}
+google-api-client = { module="com.google.api-client:google-api-client", version.ref="googleApi"}
+google-api-sheets = {module="com.google.apis:google-api-services-sheets", version.ref="googleSheetsApi"}
 
 [bundles]
 jackson = ["jackson-core", "jackson-databind", "jackson-jsr310"]

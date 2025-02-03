@@ -12,7 +12,7 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     java
     id("io.quarkus")
-
+    jacoco
 }
 
 repositories {
@@ -25,6 +25,7 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
+    implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-qute")
     implementation("io.quarkus:quarkus-cache")
 
@@ -37,6 +38,9 @@ dependencies {
     implementation(libs.log4j.core)
     implementation(libs.h2)
     implementation(libs.j2html)
+    implementation(libs.google.api.client)
+    implementation(libs.google.api.sheets)
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1") // TODO needed?
 
     testImplementation(libs.hamcrest)
     testImplementation ("io.quarkus:quarkus-junit5")
@@ -56,10 +60,17 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
 tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
