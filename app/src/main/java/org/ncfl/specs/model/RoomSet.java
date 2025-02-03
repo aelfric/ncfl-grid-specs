@@ -224,8 +224,8 @@ public enum RoomSet {
         false
     ),
     @JsonAlias("Existing Set")
-    EXISTING_SET(null, "Existing Set", () -> ul(li("Leave room as-is")), false),
-    SPECIAL_OTHER(null, null, () -> ul(li("???")), false);
+    EXISTING_SET("#", "Existing Set", () -> ul(li("Leave room as-is")), false),
+    SPECIAL_OTHER("#", null, () -> ul(li("???")), false);
 
     private final String title;
     private final String url;

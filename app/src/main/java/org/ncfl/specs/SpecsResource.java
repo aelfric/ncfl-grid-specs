@@ -4,6 +4,7 @@ import io.quarkus.cache.Cache;
 import io.quarkus.cache.CacheName;
 import io.quarkus.cache.CaffeineCache;
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -27,7 +28,7 @@ public class SpecsResource {
     private final Reporter scheduleReport;
     private final io.quarkus.cache.Cache hotelCache;
     private final GoogleSheetHandler googleSheetHandler;
-    private final String GRID_CACHE_KEY = "the grid";
+    private static final String GRID_CACHE_KEY = "the grid";
 
     @Inject
     public SpecsResource(@CacheName("room-grid") Cache hotelCache1, GoogleSheetHandler googleSheetHandler) {
@@ -41,6 +42,7 @@ public class SpecsResource {
     @Path("/refresh")
     @POST
     @Produces(MediaType.TEXT_HTML)
+    @RolesAllowed({"grid-view"})
     public Uni<String> refresh() {
         return hotelCache.invalidate(GRID_CACHE_KEY).chain(()->
             hotelCache.getAsync(GRID_CACHE_KEY, key ->
@@ -51,6 +53,7 @@ public class SpecsResource {
 
     @Path("/specs")
     @GET
+    @RolesAllowed({"grid-view"})
     public Uni<String> specs(){
         return getTheGrid().map(roomSpecReport::process).onSubscription().invoke(googleSheetHandler::doSomething);
     }
