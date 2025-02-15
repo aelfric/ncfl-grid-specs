@@ -1,4 +1,4 @@
-package org.ncfl.specs;
+package org.ncfl.specs.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import j2html.tags.specialized.UlTag;
@@ -224,8 +224,8 @@ public enum RoomSet {
         false
     ),
     @JsonAlias("Existing Set")
-    EXISTING_SET(null, "Existing Set", () -> ul(li("Leave room as-is")), false),
-    SPECIAL_OTHER(null, null, () -> ul(li("???")), false);
+    EXISTING_SET("#", "Existing Set", () -> ul(li("Leave room as-is")), false),
+    SPECIAL_OTHER("#", null, () -> ul(li("???")), false);
 
     private final String title;
     private final String url;

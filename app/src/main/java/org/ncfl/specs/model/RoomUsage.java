@@ -1,8 +1,6 @@
-package org.ncfl.specs;
+package org.ncfl.specs.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.Nulls;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

@@ -1,22 +1,24 @@
 [versions]
-poi = "5.2.5"
-log4j = "2.23.0"
+googleApi = "2.0.0"
+googleAuthBom = "1.30.1"
+googleSheetsApi = "v4-rev20220927-2.0.0"
 h2 = "2.2.224"
-fasterxmlJackson = "2.16.1"
-j2html = "1.6.0"
 hamcrest = "2.2"
+j2html = "1.6.0"
+quarkusPlatformVersion = "3.8.2"
+quarkusPluginVersion = "3.8.2"
+
 
 
 [libraries]
-jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "fasterxmlJackson" }
-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "fasterxmlJackson" }
-jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "fasterxmlJackson" }
-poi = { module = "org.apache.poi:poi", version.ref="poi" }
-poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref="poi" }
-log4j-core = { module="org.apache.logging.log4j:log4j-core", version.ref="log4j"}
-h2 = {module="com.h2database:h2", version.ref="h2"}
-j2html = {module="com.j2html:j2html", version.ref="j2html"}
-hamcrest = {module="org.hamcrest:hamcrest", version.ref="hamcrest"}
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApi" }
+google-api-sheets = { module = "com.google.apis:google-api-services-sheets", version.ref = "googleSheetsApi" }
+google-auth-bom = { module = "com.google.auth:google-auth-library-bom", version.ref = "googleAuthBom" }
+google-auth-library = { module = "com.google.auth:google-auth-library-oauth2-http" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
+j2html = { module = "com.j2html:j2html", version.ref = "j2html" }
+quarkus-bom = { module = "io.quarkus.platform:quarkus-bom", version.ref = "quarkusPlatformVersion" }
 
-[bundles]
-jackson = ["jackson-core", "jackson-databind", "jackson-jsr310"]
+[plugins]
+quarkus = { id = "io.quarkus", version.ref="quarkusPluginVersion" }

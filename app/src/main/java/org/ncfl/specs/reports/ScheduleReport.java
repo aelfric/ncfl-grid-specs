@@ -1,6 +1,7 @@
-package org.ncfl.specs;
+package org.ncfl.specs.reports;
 
 import j2html.TagCreator;
+import org.ncfl.specs.model.Hotel;
 
 import java.util.List;
 import java.util.Objects;
