@@ -55,7 +55,7 @@ public class SpecsResource {
     @GET
     @RolesAllowed({"grid-view"})
     public Uni<String> specs(){
-        return getTheGrid().map(roomSpecReport::process).onSubscription().invoke(googleSheetHandler::doSomething);
+        return getTheGrid().map(roomSpecReport::process);
     }
 
     private Uni<List<Hotel>> getTheGrid() {

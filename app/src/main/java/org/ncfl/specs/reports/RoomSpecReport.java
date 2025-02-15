@@ -7,13 +7,7 @@ import j2html.tags.specialized.BodyTag;
 import j2html.tags.specialized.DivTag;
 import j2html.tags.specialized.LiTag;
 import jakarta.annotation.Nonnull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.ncfl.specs.model.WhenAndWhat;
-import org.ncfl.specs.model.Hotel;
-import org.ncfl.specs.model.RoomID;
-import org.ncfl.specs.model.RoomSet;
-import org.ncfl.specs.model.RoomUsage;
+import org.ncfl.specs.model.*;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -184,7 +178,7 @@ public class RoomSpecReport implements Reporter {
     }
 
     private Map<RoomID, List<RoomUsage>> dedupeCubicles(Map<RoomID, List<RoomUsage>> roomMap) {
-        final HashMap<RoomID, List<RoomUsage>> map = new HashMap<>(roomMap.size());
+        final HashMap<RoomID, List<RoomUsage>> map = HashMap.newHashMap(roomMap.size());
         for (Map.Entry<RoomID, List<RoomUsage>> entry : roomMap.entrySet()) {
             final RoomID roomID = entry.getKey();
             if (roomID.name().contains("-")) {
@@ -274,7 +268,7 @@ public class RoomSpecReport implements Reporter {
                     timeRange,
                     a(String.valueOf(roomSet))
                         .attr("href", roomSet.href()),
-                    text(" (%s)".formatted(usages.get(0).activity()))
+                    text(" (%s)".formatted(usages.getFirst().activity()))
                 ),
                 ul(
                     li(
@@ -283,15 +277,15 @@ public class RoomSpecReport implements Reporter {
                     )
                 )
                     .with(
-                        usages.get(0).publish() ? li(
+                        usages.getFirst().publish() ? li(
                             strong("Readerboard: "),
-                            text(usages.get(0).activity())
+                            text(usages.getFirst().activity())
                         ) : text(""),
-                        (usages.get(0).avNeeds() != null && !usages.get(0).avNeeds().isBlank()) ? li(
+                        (usages.getFirst().avNeeds() != null && !usages.getFirst().avNeeds().isBlank()) ? li(
                             strong("A/V Needs: "),
-                            text(usages.get(0).avNeeds())
+                            text(usages.getFirst().avNeeds())
                         ) : text(""),
-                        usages.get(0).catering() != null && !usages.get(0)
+                        usages.getFirst().catering() != null && !usages.getFirst()
                             .catering().isEmpty() ? li(
                             strong("Catering Needs: "),
                             text("[TO FILL IN]")

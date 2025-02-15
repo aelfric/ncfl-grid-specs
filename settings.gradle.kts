@@ -17,7 +17,4 @@ pluginManagement {
         gradlePluginPortal()
         mavenLocal()
     }
-    plugins {
-        id(quarkusPluginId) version quarkusPluginVersion
-    }
 }
