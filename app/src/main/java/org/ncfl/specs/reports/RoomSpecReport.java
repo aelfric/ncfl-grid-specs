@@ -150,14 +150,16 @@ public class RoomSpecReport implements Reporter {
 
     private List<DomContent> getRoomSets(Hotel hotel) {
         return List.of(
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 21)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 22)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 23)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 24)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 25)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 26)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 27)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 28))
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 19)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 20)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 21)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 22)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 23)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 24)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 25)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 26)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 27)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 28))
         );
     }
 
@@ -270,6 +272,7 @@ public class RoomSpecReport implements Reporter {
                         .attr("href", roomSet.href()),
                     text(" (%s)".formatted(usages.getFirst().activity()))
                 ),
+                usages.get(0).roomSet() == RoomSet.ROOM_TURN ? null :
                 ul(
                     li(
                         strong("Room Setup:"),

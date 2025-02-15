@@ -1,13 +1,13 @@
 package org.ncfl.specs.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import j2html.TagCreator;
 import j2html.tags.specialized.UlTag;
 import jakarta.annotation.Nonnull;
 
 import java.util.function.Supplier;
 
-import static j2html.TagCreator.li;
-import static j2html.TagCreator.ul;
+import static j2html.TagCreator.*;
 
 // TODO in the future should be able to recognize "existing set" when the room setup does not
 //      change between usages
@@ -225,6 +225,8 @@ public enum RoomSet {
     ),
     @JsonAlias("Existing Set")
     EXISTING_SET("#", "Existing Set", () -> ul(li("Leave room as-is")), false),
+    @JsonAlias("Room Turn")
+    ROOM_TURN("#", "Room Turn", TagCreator::ul, false),
     SPECIAL_OTHER("#", null, () -> ul(li("???")), false);
 
     private final String title;
