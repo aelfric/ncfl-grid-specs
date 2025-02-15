@@ -12,7 +12,7 @@ updates:
     groups:
       quarkus:
         patterns: 
-          - "io.quarkus:*"
+          - "io.quarkus"
           - "io.quarkus.platform:*"
     reviewers:
       - "aelfric"
