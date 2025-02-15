@@ -31,8 +31,8 @@ public class SpecsResource {
     private static final String GRID_CACHE_KEY = "the grid";
 
     @Inject
-    public SpecsResource(@CacheName("room-grid") Cache hotelCache1, GoogleSheetHandler googleSheetHandler) {
-        this.hotelCache = hotelCache1;
+    public SpecsResource(@CacheName("room-grid") Cache hotelCache, GoogleSheetHandler googleSheetHandler) {
+        this.hotelCache = hotelCache;
         this.competitionGridReport = new CompetitionGridReport();
         this.roomSpecReport = new RoomSpecReport();
         this.scheduleReport = new ScheduleReport();

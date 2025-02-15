@@ -5,11 +5,3 @@
 build
 /.idea/
 /output.html
-/app/.classpath
-/.editorconfig
-/app/.project
-/.project
-/.settings/org.eclipse.buildship.core.prefs
-/app/.settings/org.eclipse.buildship.core.prefs
-/app/src/main/resources/credentials.json
-/tokens/StoredCredential

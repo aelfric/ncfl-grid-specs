@@ -1,4 +1,5 @@
-package org.ncfl.specs.reports;/*
+package org.ncfl.specs.reports;
+/*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
  * a standard sort, this algorithm sorts numbers in numeric order.
@@ -22,6 +23,7 @@ package org.ncfl.specs.reports;/*
  *
  */
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -43,6 +45,7 @@ public final class AlphaNumComparator
     /**
      * Serialization.
      */
+    @Serial
     private static final long serialVersionUID = -6479933364695408622L;
 
     /**
@@ -117,6 +120,7 @@ public final class AlphaNumComparator
      * @return A negative integer, zero, or a positive integer as the first
      * argument is less than, equal to, or greater than the second.
      */
+    @SuppressWarnings("java:S3776") // cognitive complexity okay for now
     public int compare(final String string1, final String string2) {
         int thisMarker = 0;
         int thatMarker = 0;

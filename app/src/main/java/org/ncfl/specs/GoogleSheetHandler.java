@@ -16,6 +16,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.InternalServerErrorException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.ncfl.specs.model.Hotel;
@@ -38,9 +39,9 @@ public class GoogleSheetHandler {
 
     @Inject
     public GoogleSheetHandler(
-        ObjectMapper objectMapper,
-        @ConfigProperty(name = "google.sheet-id") String sheetId,
-        @ConfigProperty(name = "google.credential-path") Path credentialPath
+            ObjectMapper objectMapper,
+            @ConfigProperty(name = "google.sheet-id") String sheetId,
+            @ConfigProperty(name = "google.credential-path") Path credentialPath
     ) {
         this.objectMapper = objectMapper;
         this.sheetId = sheetId;
@@ -50,19 +51,15 @@ public class GoogleSheetHandler {
 
     public Uni<List<Hotel>> getHotelRoomUsage() {
         return Uni
-            .createFrom()
-            .item(this::readSheets)
-            .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
+                .createFrom()
+                .item(this::readSheets)
+                .runSubscriptionOn(Infrastructure.getDefaultWorkerPool());
     }
 
-    private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
+    private static final String APPLICATION_NAME = "NCFL Grid Specs";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
-     */
     private static final List<String> SCOPES =
-        Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
+            Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
     /**
      * Creates an authorized Credential object.
@@ -71,9 +68,9 @@ public class GoogleSheetHandler {
      * @throws IOException If the credentials.json file cannot be found.
      */
     private HttpRequestInitializer getCredentials()
-        throws IOException {
+            throws IOException {
         GoogleCredentials credential = ServiceAccountCredentials.fromStream(Files.newInputStream(credentialPath))
-            .createScoped(SCOPES);
+                .createScoped(SCOPES);
         credential.refreshIfExpired();
         credential.getAccessToken();
         return new HttpCredentialsAdapter(credential);
@@ -84,22 +81,22 @@ public class GoogleSheetHandler {
             // Build a new authorized API client service.
             final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             Sheets service =
-                new Sheets.Builder(httpTransport, JSON_FACTORY, getCredentials())
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
+                    new Sheets.Builder(httpTransport, JSON_FACTORY, getCredentials())
+                            .setApplicationName(APPLICATION_NAME)
+                            .build();
             return List.of(
-                getHotel(service, "Hilton Chicago!A1:P", "Hilton Chicago"),
-                getHotel(service, "Palmer House!A1:P", "Palmer House")
+                    getHotel(service, "Hilton Chicago!A1:P", "Hilton Chicago"),
+                    getHotel(service, "Palmer House!A1:P", "Palmer House")
             );
         } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeException(e);
+            throw new InternalServerErrorException(e);
         }
     }
 
     private Hotel getHotel(Sheets service, String range, String hotelName) throws IOException {
         ValueRange response = service.spreadsheets().values()
-            .get(sheetId, range)
-            .execute();
+                .get(sheetId, range)
+                .execute();
         List<List<Object>> values = response.getValues();
         List<RoomUsage> data;
         if (values == null || values.isEmpty()) {
@@ -109,25 +106,25 @@ public class GoogleSheetHandler {
             List<String> headers = values.getFirst().stream().map(Object::toString).toList();
 
             data = values.parallelStream()
-                .skip(1)
-                .map(row -> {
-                    final Map<String, String> datum = rowToMap(row, headers);
+                    .skip(1)
+                    .map(row -> {
+                        final Map<String, String> datum = rowToMap(row, headers);
 
-                    try {
-                        if (!datum.getOrDefault("Day", "").isEmpty()) {
-                            logger.infov("Record: {0}", datum);
-                            return objectMapper.convertValue(datum, RoomUsage.class);
-                        } else {
+                        try {
+                            if (!datum.getOrDefault("Day", "").isEmpty()) {
+                                logger.infov("Record: {0}", datum);
+                                return objectMapper.convertValue(datum, RoomUsage.class);
+                            } else {
+                                return null;
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.error("Could not read row {}", datum, e);
                             return null;
                         }
-                    } catch (IllegalArgumentException e) {
-                        logger.error("Could not read row {}", datum, e);
-                        return null;
-                    }
 
-                })
-                .filter(Objects::nonNull)
-                .toList();
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
         }
         return new Hotel(hotelName, data);
     }
