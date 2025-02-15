@@ -287,12 +287,27 @@ public class RoomSpecReport implements Reporter {
                         .attr("href", roomSet.href()),
                     text(" (%s)".formatted(usage.activity()))
                 ),
-                usage.roomSet() == RoomSet.ROOM_TURN ? null :
-                    ul(
-                        li(
-                            strong("Room Setup:"),
-                            roomSet.description().with(notes)
-                        )
+                usages.get(0).roomSet() == RoomSet.ROOM_TURN ? null :
+                ul(
+                    li(
+                        strong("Room Setup:"),
+                        roomSet.description().with(notes)
+                    )
+                )
+                    .with(
+                        usages.getFirst().publish() ? li(
+                            strong("Readerboard: "),
+                            text(usages.getFirst().activity())
+                        ) : text(""),
+                        (usages.getFirst().avNeeds() != null && !usages.getFirst().avNeeds().isBlank()) ? li(
+                            strong("A/V Needs: "),
+                            text(usages.getFirst().avNeeds())
+                        ) : text(""),
+                        usages.getFirst().catering() != null && !usages.getFirst()
+                            .catering().isEmpty() ? li(
+                            strong("Catering Needs: "),
+                            text("[TO FILL IN]")
+                        ) : text("")
                     )
                         .with(readerBoard, avNeeds, catering)
             );
