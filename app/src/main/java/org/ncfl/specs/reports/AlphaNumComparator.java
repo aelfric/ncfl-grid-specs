@@ -137,7 +137,7 @@ public final class AlphaNumComparator
             thatMarker += thatChunk.length();
 
             // If both chunks contain numeric characters, sort them numerically
-            int result = 0;
+            int result;
             if (this.isDigit(thisChunk.charAt(0))
                 && this.isDigit(thatChunk.charAt(0))) {
                 // Simple chunk comparison by length.
