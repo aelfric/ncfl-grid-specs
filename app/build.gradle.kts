@@ -18,7 +18,6 @@ dependencies {
     implementation ("io.quarkus:quarkus-resteasy-reactive")
     implementation( "io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation ("io.quarkus:quarkus-arc")
-    implementation(libs.h2)
     implementation(libs.j2html)
     implementation(libs.google.api.client)
     implementation(libs.google.api.sheets)
