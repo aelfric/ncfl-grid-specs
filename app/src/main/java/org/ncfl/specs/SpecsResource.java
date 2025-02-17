@@ -12,11 +12,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.ncfl.specs.model.Hotel;
-import org.ncfl.specs.reports.CompetitionGridReport;
-import org.ncfl.specs.reports.Reporter;
-import org.ncfl.specs.reports.RoomSpecReport;
-import org.ncfl.specs.reports.ScheduleReport;
+import org.ncfl.specs.reports.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Path("/")
@@ -24,6 +22,7 @@ import java.util.List;
 public class SpecsResource {
 
     private final Reporter roomSpecReport;
+    private final Reporter roomSetReport;
     private final Reporter competitionGridReport;
     private final Reporter scheduleReport;
     private final io.quarkus.cache.Cache hotelCache;
@@ -36,13 +35,13 @@ public class SpecsResource {
         this.competitionGridReport = new CompetitionGridReport();
         this.roomSpecReport = new RoomSpecReport();
         this.scheduleReport = new ScheduleReport();
+        this.roomSetReport = new RoomSetReport();
         this.googleSheetHandler = googleSheetHandler;
     }
 
     @Path("/refresh")
     @POST
     @Produces(MediaType.TEXT_HTML)
-    @RolesAllowed({"grid-view"})
     public Uni<String> refresh() {
         return hotelCache.invalidate(GRID_CACHE_KEY).chain(()->
             hotelCache.getAsync(GRID_CACHE_KEY, key ->
@@ -53,9 +52,15 @@ public class SpecsResource {
 
     @Path("/specs")
     @GET
-    @RolesAllowed({"grid-view"})
     public Uni<String> specs(){
         return getTheGrid().map(roomSpecReport::process);
+    }
+
+
+    @Path("/sets")
+    @GET
+    public Uni<String> sets(){
+        return Uni.createFrom().item(roomSetReport.process(Collections.emptyList()));
     }
 
     private Uni<List<Hotel>> getTheGrid() {

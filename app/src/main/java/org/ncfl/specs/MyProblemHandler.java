@@ -23,7 +23,7 @@ class MyProblemHandler extends DeserializationProblemHandler {
             return DayOfWeek.valueOf(valueToConvert.toUpperCase());
         }
         if (targetType == LocalDate.class && valueToConvert != null && !valueToConvert.isEmpty()) {
-            return MonthDay.parse(valueToConvert, DateTimeFormatter.ofPattern("MMMM dd")).atYear(2024);
+            return MonthDay.parse(valueToConvert, DateTimeFormatter.ofPattern("MMMM dd")).atYear(2025);
         }
         return super.handleWeirdStringValue(ctx, targetType, valueToConvert, failureMsg);
     }
