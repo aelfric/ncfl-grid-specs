@@ -17,7 +17,7 @@ public class RoomSetReport implements Reporter {
                     .withHref(rs.href())
                     .withTarget("_blank")
                     .withRel("noopener noreferrer")
-                ))
+                ).with(rs.description()))
         ).toString();
     }
 }

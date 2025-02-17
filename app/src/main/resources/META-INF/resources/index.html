@@ -1,15 +1,25 @@
 <!doctype html>
 <html lang="en">
-<script src="https://unpkg.com/htmx.org@1.9.11"
-        integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
-        crossorigin="anonymous"></script>
+<head>
+    <title>NCFL Grid Viewer</title>
+    <script src="https://unpkg.com/htmx.org@1.9.11"
+            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
 
-<button hx-post="/refresh"  hx-swap="innerHTML" hx-target="#result">
-    Refresh
-</button>
-<a href="#" hx-get="/sched" hx-swap="innerHTML" hx-target="#result" >Schedule</a>
-<a href="#" hx-get="/specs" hx-swap="innerHTML" hx-target="#result" >Specs</a>
-<a href="#" hx-get="/grid" hx-swap="innerHTML" hx-target="#result" >Grid</a>
-<a href="#" hx-get="/sets" hx-swap="innerHTML" hx-target="#result" >Room Sets</a>
-<div id="result"></div>
+<nav>
+    <h1>NCFL Grid Viewer</h1>
+    <ul>
+        <li><a href="#" hx-get="/sched" hx-swap="innerHTML" hx-target="#result">Schedule</a></li>
+        <li><a href="#" hx-get="/specs" hx-swap="innerHTML" hx-target="#result">Specs</a></li>
+        <li><a href="#" hx-get="/grid" hx-swap="innerHTML" hx-target="#result">Grid</a></li>
+        <li><a href="#" hx-get="/sets" hx-swap="innerHTML" hx-target="#result">Room Sets</a></li>
+    </ul>
+    <button hx-post="/refresh" hx-swap="innerHTML" hx-target="#result" hx-indicator="#spinner">
+        Refresh
+        <span id="spinner" class="loader htmx-indicator"></span>
+    </button>
+</nav>
+<main id="result"></main>
 </html>
