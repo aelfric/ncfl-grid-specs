@@ -24,7 +24,7 @@ public class SpecsResource {
     private final Reporter roomSpecReport;
     private final Reporter roomSetReport;
     private final Reporter competitionGridReport;
-    private final Reporter scheduleReport;
+    private final ScheduleReport scheduleReport;
     private final io.quarkus.cache.Cache hotelCache;
     private final GoogleSheetHandler googleSheetHandler;
     private static final String GRID_CACHE_KEY = "the grid";
@@ -69,9 +69,10 @@ public class SpecsResource {
             .getIfPresent(GRID_CACHE_KEY));
     }
 
-    @Path("/sched")
+    @Path("/sched.json")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Uni<String> schedule(){
+    public Uni<List<ScheduleReport.ScheduleBlock>> schedule(){
         return getTheGrid().map(scheduleReport::process);
     }
 

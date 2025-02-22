@@ -1,0 +1,45 @@
+<h1>Schedule</h1>
+<button id="prev" type="button">Previous Day</button>
+<button id="next" type="button">Next Day</button>
+<div id="dp"></div>
+<script src="daypilot/daypilot-javascript.min.js"></script>
+<script type="module">
+    (() => {
+        let date = new Date(2025, 4, 19);
+        const dp = new DayPilot.Calendar("dp", {
+            viewType: "Day",
+            businessBeginsHour: 6,
+            businessEndsHour: 24,
+            startDate: date,
+            timeRangeSelectedHandling: "Disabled",
+            eventMoveHandling: "Disabled",
+            eventResizeHandling: "Disabled",
+            eventClickHandling: "Disabled",
+        });
+        dp.init();
+
+        async function loadEvents() {
+            const {data} = await DayPilot.Http.get("/sched.json");
+            dp.update({
+                events: data
+            });
+        }
+
+        document.getElementById("prev").addEventListener("click", (e) => {
+            e.preventDefault();
+            dp.update({
+                startDate: dp.startDate.addDays(-1)
+            });
+        });
+        document.getElementById("next").addEventListener("click", (e) => {
+            e.preventDefault();
+            dp.update({
+                startDate: dp.startDate.addDays(1)
+            });
+        });
+
+        loadEvents().then();
+    })()
+
+
+</script>
