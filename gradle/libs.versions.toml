@@ -1,7 +1,7 @@
 [versions]
 googleApi = "2.7.2"
 googleAuthBom = "1.32.1"
-googleSheetsApi = "v4-rev20250106-2.0.0"
+googleSheetsApi = "v4-rev20250211-2.0.0"
 hamcrest = "3.0"
 j2html = "1.6.0"
 quarkusPlatformVersion = "3.18.3"
