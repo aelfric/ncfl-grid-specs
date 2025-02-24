@@ -1,5 +1,6 @@
 package org.ncfl.specs.reports;
 
+import com.google.common.base.Strings;
 import j2html.TagCreator;
 import j2html.tags.DomContent;
 import j2html.tags.Text;
@@ -27,32 +28,27 @@ public class RoomSpecReport implements Reporter {
     public String process(List<Hotel> hotelRoomUsage) {
         BodyTag body = body();
         for (Hotel hotel : hotelRoomUsage) {
-            body = body
-                .with(h1(hotel.name()))
-                .with(
-                    getAVNeeds(hotel)
-                )
-                .with(
-                    getReaderBoards(hotel)
-                )
-                .with(
-                    getCateringNeeds(hotel)
-                )
+            body.with(p(a(hotel.name()).withHref("#"+hotel.slug())));
+        }
+        for (Hotel hotel : hotelRoomUsage) {
+            body
+                .with(h1(hotel.name()).withId(hotel.slug()))
+                .with(getAVNeeds(hotel))
+                .with(getReaderBoards(hotel))
+                .with(getCateringNeeds(hotel))
                 .with(
                     h2("All-Gender Restrooms"),
                     p("Please designate at least one public restroom as an all-gender " +
-                        "restroom and let me know where it is so I can post it on our " +
-                        "communications document.")
+                      "restroom and let me know where it is so I can post it on our " +
+                      "communications document.")
                 )
-                .with(
-                    getRoomSets(hotel)
-                );
+                .with(getRoomSets(hotel));
         }
         return body.render();
     }
 
     private List<DomContent> getReaderBoards(Hotel hotel) {
-        Stream<DomContent> stream = hotel
+        Stream<DomContent> readerBoards = hotel
             .roomUsage()
             .stream()
             .filter(RoomUsage::publish)
@@ -74,11 +70,11 @@ public class RoomSpecReport implements Reporter {
 
         return List.of(
             h2("Readerboard"),
-            ul().with(stream));
+            ul().with(readerBoards));
     }
 
     private List<DomContent> getAVNeeds(Hotel hotel) {
-        Stream<DomContent> stream = hotel
+        Stream<DomContent> avNeeds = hotel
             .roomUsage()
             .stream()
             .filter(roomUsage -> roomUsage.avNeeds() != null && !roomUsage.avNeeds().isBlank())
@@ -107,7 +103,7 @@ public class RoomSpecReport implements Reporter {
 
         return List.of(
             h2("A/V Needs"),
-            ul().with(stream));
+            ul().with(avNeeds));
     }
 
     private List<DomContent> getCateringNeeds(Hotel hotel) {
@@ -150,14 +146,16 @@ public class RoomSpecReport implements Reporter {
 
     private List<DomContent> getRoomSets(Hotel hotel) {
         return List.of(
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 21)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 22)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 23)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 24)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 25)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 26)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 27)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2024, Month.MAY, 28))
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 19)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 20)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 21)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 22)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 23)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 24)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 25)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 26)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 27)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 28))
         );
     }
 
@@ -263,34 +261,40 @@ public class RoomSpecReport implements Reporter {
             timeRange =
             text("%s - %s ".formatted(key.start(), key.end()));
         if (usages.size() == 1) {
+            RoomUsage usage = usages.getFirst();
+            DomContent readerBoard = !usage.publish() ?
+                text("") :
+                li(
+                    strong("Readerboard: "),
+                    text(usage.activity())
+                );
+            DomContent avNeeds = Strings.isNullOrEmpty(usage.avNeeds()) ?
+                text("") :
+                li(
+                    strong("A/V Needs: "),
+                    text(usage.avNeeds())
+                );
+            DomContent catering = Strings.isNullOrEmpty(usage.catering()) ?
+                text("") :
+                li(
+                    strong("Catering Needs: "),
+                    text("[TO FILL IN]")
+                );
             return div(
                 p(
                     timeRange,
                     a(String.valueOf(roomSet))
                         .attr("href", roomSet.href()),
-                    text(" (%s)".formatted(usages.getFirst().activity()))
+                    text(" (%s)".formatted(usage.activity()))
                 ),
-                ul(
-                    li(
-                        strong("Room Setup:"),
-                        roomSet.description().with(notes)
+                usage.roomSet() == RoomSet.ROOM_TURN ? null :
+                    ul(
+                        li(
+                            strong("Room Setup:"),
+                            roomSet.description().with(notes)
+                        )
                     )
-                )
-                    .with(
-                        usages.getFirst().publish() ? li(
-                            strong("Readerboard: "),
-                            text(usages.getFirst().activity())
-                        ) : text(""),
-                        (usages.getFirst().avNeeds() != null && !usages.getFirst().avNeeds().isBlank()) ? li(
-                            strong("A/V Needs: "),
-                            text(usages.getFirst().avNeeds())
-                        ) : text(""),
-                        usages.getFirst().catering() != null && !usages.getFirst()
-                            .catering().isEmpty() ? li(
-                            strong("Catering Needs: "),
-                            text("[TO FILL IN]")
-                        ) : text("")
-                    )
+                        .with(readerBoard, avNeeds, catering)
             );
         } else {
             return div(
