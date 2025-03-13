@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(enforcedPlatform(libs.quarkus.bom))
+    implementation("io.quarkus:quarkus-container-image-jib")
     implementation("io.quarkus:quarkus-qute")
     implementation("io.quarkus:quarkus-cache")
     implementation ("io.quarkus:quarkus-rest")
