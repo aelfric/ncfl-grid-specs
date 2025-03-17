@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static j2html.TagCreator.option;
+import static j2html.TagCreator.*;
 
 @Path("/")
 @Produces(MediaType.TEXT_HTML)
@@ -60,29 +60,65 @@ public class SpecsResource {
     @Path("/refresh")
     @POST
     @Produces(MediaType.TEXT_HTML)
-    public Uni<String> refresh(@QueryParam("save") boolean shouldSave) {
+    public Uni<String> refresh() {
         return hotelCache.invalidate(GRID_CACHE_KEY).chain(() ->
-                hotelCache.getAsync(
-                        GRID_CACHE_KEY,
-                        key -> googleSheetHandler.getHotelRoomUsage()
-                    )
-                    .map(roomSpecReport::process))
-            .onItem()
+            hotelCache.getAsync(
+                    GRID_CACHE_KEY,
+                    key -> googleSheetHandler.getHotelRoomUsage()
+                )
+                .map(roomSpecReport::process));
+    }
+
+    @Path("/save")
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    public Uni<String> save() {
+        return getTheGrid().map(roomSpecReport::process)
             .invoke(
                 s -> {
-                    if (shouldSave) {
-                        log.info("Uploading to S3");
-                        s3.putObject(
-                            PutObjectRequest
-                                .builder()
-                                .bucket(bucketName)
-                                .key(LocalDateTime.now().toString())
-                                .build(),
-                            RequestBody.fromString(s)
-                        );
-                    }
+                    log.info("Uploading to S3");
+                    s3.putObject(
+                        PutObjectRequest
+                            .builder()
+                            .bucket(bucketName)
+                            .key(LocalDateTime.now().toString())
+                            .build(),
+                        RequestBody.fromString(s)
+                    );
+                    log.info("Uploading complete");
                 }
-            );
+            )
+            .replaceWith(this.snapshots());
+    }
+
+    @Path("/compare")
+    @POST
+    @Produces(MediaType.TEXT_HTML)
+    public Uni<String> compare(@FormParam("version") String version) {
+        return Uni.combine().all().unis(
+            specs(),
+            Uni.createFrom().item(Unchecked.supplier(() -> new String(
+                s3.getObject(
+                    GetObjectRequest
+                        .builder()
+                        .bucket(bucketName)
+                        .key(version)
+                        .build()
+                ).readAllBytes(),
+                StandardCharsets.UTF_8
+            )))
+        ).with(
+            (newHtml, oldHtml) ->
+                main(
+                    button("compare").attr("onclick", "doCompare()").attr("type","button"),
+                    template(rawHtml(oldHtml)).attr("id", "before"),
+                    template(rawHtml(newHtml)).attr("id", "after"),
+                    div().attr("id", "result-container"),
+                    script()
+                        .attr("type", "module")
+                        .attr("src", "./compare.mjs")
+                ).toString()
+        );
     }
 
     @Path("/specs")
