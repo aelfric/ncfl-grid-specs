@@ -140,7 +140,7 @@ public class RoomSpecReport implements Reporter {
         return li(
             strong(roomUsage.name()),
             text(": "),
-            text(roomUsage.activity())
+            text(roomUsage.label())
         );
     }
 
@@ -165,7 +165,7 @@ public class RoomSpecReport implements Reporter {
         Map<RoomID, List<RoomUsage>> roomMap = data
             .stream()
             .filter(u -> localDate.equals(u.date()))
-            .filter(u -> Objects.nonNull(u.activity()) && !u.activity().isEmpty())
+            .filter(u -> Objects.nonNull(u.label()) && !u.label().isEmpty())
             .collect(Collectors.groupingBy(RoomUsage::key));
 
         if (roomMap.isEmpty()) {
@@ -266,7 +266,7 @@ public class RoomSpecReport implements Reporter {
                 text("") :
                 li(
                     strong("Readerboard: "),
-                    text(usage.activity())
+                    text(usage.label())
                 );
             DomContent avNeeds = Strings.isNullOrEmpty(usage.avNeeds()) ?
                 text("") :
@@ -285,7 +285,7 @@ public class RoomSpecReport implements Reporter {
                     timeRange,
                     a(String.valueOf(roomSet))
                         .attr("href", roomSet.href()),
-                    text(" (%s)".formatted(usage.activity()))
+                    text(" (%s)".formatted(usage.label()))
                 ),
                 usage.roomSet() == RoomSet.ROOM_TURN ? null :
                     ul(
