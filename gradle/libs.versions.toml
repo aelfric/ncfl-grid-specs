@@ -4,8 +4,8 @@ googleAuthBom = "1.33.1"
 googleSheetsApi = "v4-rev20250415-2.0.0"
 hamcrest = "3.0"
 j2html = "1.6.0"
-quarkusPlatformVersion = "3.19.3"
-quarkusPluginVersion = "3.19.3"
+quarkusPlatformVersion = "3.21.1"
+quarkusPluginVersion = "3.21.1"
 
 
 
