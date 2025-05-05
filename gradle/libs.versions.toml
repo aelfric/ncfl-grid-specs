@@ -1,6 +1,6 @@
 [versions]
 googleApi = "2.7.2"
-googleAuthBom = "1.33.1"
+googleAuthBom = "1.34.0"
 googleSheetsApi = "v4-rev20250415-2.0.0"
 hamcrest = "3.0"
 j2html = "1.6.0"
