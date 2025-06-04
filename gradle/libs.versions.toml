@@ -1,5 +1,5 @@
 [versions]
-googleApi = "2.7.2"
+googleApi = "2.8.0"
 googleAuthBom = "1.33.1"
 googleSheetsApi = "v4-rev20250415-2.0.0"
 hamcrest = "3.0"
