@@ -130,19 +130,20 @@ public class SpecsResource {
     @Path("/snapshots")
     @GET
     public Uni<String> snapshots() {
-        return Uni.createFrom().item(
-            () -> s3.listObjects(
-                    ListObjectsRequest
-                        .builder()
-                        .bucket(bucketName)
-                        .build()
-                )
-                .contents()
-                .stream()
-                .map(S3Object::key)
-                .map(key -> option(key).attr("value", key).toString())
-                .collect(Collectors.joining())
-        );
+        return Uni.createFrom().item("");
+//        return Uni.createFrom().item(
+//            () -> s3.listObjects(
+//                    ListObjectsRequest
+//                        .builder()
+//                        .bucket(bucketName)
+//                        .build()
+//                )
+//                .contents()
+//                .stream()
+//                .map(S3Object::key)
+//                .map(key -> option(key).attr("value", key).toString())
+//                .collect(Collectors.joining())
+//        );
     }
 
     @Path("/snapshots/{key}")

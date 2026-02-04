@@ -146,16 +146,16 @@ public class RoomSpecReport implements Reporter {
 
     private List<DomContent> getRoomSets(Hotel hotel) {
         return List.of(
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 19)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 20)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 21)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 22)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 23)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 24)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 25)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 26)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 27)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 28))
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 22)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 23)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 24)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 25)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 26)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 27)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 28)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 29)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 30)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 31))
         );
     }
 
