@@ -13,12 +13,15 @@ repositories {
 
 dependencies {
     implementation(enforcedPlatform(libs.quarkus.bom))
+    implementation(enforcedPlatform(libs.quarkus.s3))
     implementation("io.quarkus:quarkus-container-image-jib")
     implementation("io.quarkus:quarkus-qute")
     implementation("io.quarkus:quarkus-cache")
     implementation ("io.quarkus:quarkus-rest")
     implementation( "io.quarkus:quarkus-rest-jackson")
     implementation ("io.quarkus:quarkus-arc")
+    implementation("io.quarkiverse.amazonservices:quarkus-amazon-s3")
+    implementation("software.amazon.awssdk:url-connection-client")
     implementation(libs.j2html)
     implementation(libs.google.api.client)
     implementation(libs.google.api.sheets)

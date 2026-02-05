@@ -11,13 +11,13 @@ import static j2html.TagCreator.*;
 public class RoomSetReport implements Reporter {
     @Override
     public String process(List<Hotel> hotelList) {
-        return ul().with(
+        return table().with(
             Arrays.stream(RoomSet.values())
-                .map(rs -> li(a(rs.name())
-                    .withHref(rs.href())
-                    .withTarget("_blank")
-                    .withRel("noopener noreferrer")
-                ).with(rs.description()))
+                .map(rs -> tr(
+                    td(a(rs.title())),
+                    td(a(rs.href())),
+                    td(rs.description())
+                ))
         ).toString();
     }
 }

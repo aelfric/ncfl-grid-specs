@@ -8,6 +8,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 
 class MyProblemHandler extends DeserializationProblemHandler {
     @Override
@@ -23,7 +25,11 @@ class MyProblemHandler extends DeserializationProblemHandler {
             return DayOfWeek.valueOf(valueToConvert.toUpperCase());
         }
         if (targetType == LocalDate.class && valueToConvert != null && !valueToConvert.isEmpty()) {
-            return MonthDay.parse(valueToConvert, DateTimeFormatter.ofPattern("MMMM dd")).atYear(2025);
+            try {
+                return MonthDay.parse(valueToConvert, DateTimeFormatter.ofPattern("MMMM dd")).atYear(2025);
+            } catch (DateTimeParseException e) {
+                return LocalDate.parse(valueToConvert, DateTimeFormatter.ofPattern("M/dd/yyyy"));
+            }
         }
         return super.handleWeirdStringValue(ctx, targetType, valueToConvert, failureMsg);
     }

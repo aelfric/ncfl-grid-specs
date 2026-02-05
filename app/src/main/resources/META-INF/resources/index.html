@@ -15,10 +15,22 @@
         <li><a href="#" hx-get="/specs" hx-swap="innerHTML" hx-target="#result">Specs</a></li>
         <li><a href="#" hx-get="/grid" hx-swap="innerHTML" hx-target="#result">Grid</a></li>
         <li><a href="#" hx-get="/sets" hx-swap="innerHTML" hx-target="#result">Room Sets</a></li>
+        <li>
+            <form hx-post="/compare" hx-target="#result">
+                <label>Version to compare:
+                    <select name="version" hx-trigger="load" hx-get="/snapshots" hx-target="#snapshots" id="snapshots"></select>
+                </label>
+                <button type="submit">Compare</button>
+            </form>
+        </li>
     </ul>
     <button hx-post="/refresh" hx-swap="innerHTML" hx-target="#result" hx-indicator="#spinner">
         Refresh
         <span id="spinner" class="loader htmx-indicator"></span>
+    </button>
+    <button hx-post="/save" hx-swap="innerHTML" hx-target="#snapshots" hx-indicator="#spinner-save">
+        Save
+        <span id="spinner-save" class="loader htmx-indicator"></span>
     </button>
 </nav>
 <main id="result"></main>

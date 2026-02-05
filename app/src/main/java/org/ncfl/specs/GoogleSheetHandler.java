@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Singleton
 public class GoogleSheetHandler {
@@ -84,10 +85,21 @@ public class GoogleSheetHandler {
                     new Sheets.Builder(httpTransport, JSON_FACTORY, getCredentials())
                             .setApplicationName(APPLICATION_NAME)
                             .build();
-            return List.of(
-                    getHotel(service, "Hilton Chicago!A1:P", "Hilton Chicago"),
-                    getHotel(service, "Palmer House!A1:P", "Palmer House")
-            );
+            return Stream
+                .of(
+                    "Marquis",
+                    "Westin",
+                    "Grand Hyatt",
+                    "Convention Center")
+                .map(
+                        hotelName -> {
+                            try {
+                                return getHotel(service, hotelName + "!A1:P", hotelName);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).toList();
         } catch (IOException | GeneralSecurityException e) {
             throw new InternalServerErrorException(e);
         }

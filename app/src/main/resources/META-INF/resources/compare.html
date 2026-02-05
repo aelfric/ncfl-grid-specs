@@ -1,0 +1,38 @@
+<style>
+    ins {
+        background-color: #DAFBE1;
+    }
+    del {
+        background-color: #FFEBE9;
+    }
+    #before, #after {
+        display: none;
+    }
+</style>
+<main>
+    <div id="before">
+        <p>Some room</p>
+        <ul>
+            <li>A</li>
+            <li>B</li>
+            <li>C</li>
+        </ul>
+    </div>
+    <div id="after">
+        <p>Some rooms</p>
+        <ul>
+            <li>A</li>
+            <li>Bx</li>
+            <li>C</li>
+        </ul>
+        <ul>
+            <li>D</li>
+            <li>E</li>
+            <li>F</li>
+        </ul>
+    </div>
+    <div id="result-container">
+
+    </div>
+</main>
+<script type="module" src="./compare.mjs"></script>

@@ -6,7 +6,7 @@ hamcrest = "3.0"
 j2html = "1.6.0"
 quarkusPlatformVersion = "3.31.2"
 quarkusPluginVersion = "3.31.2"
-
+quarkusS3Version = "3.2.0"
 
 
 [libraries]
@@ -17,6 +17,7 @@ google-auth-library = { module = "com.google.auth:google-auth-library-oauth2-htt
 hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
 j2html = { module = "com.j2html:j2html", version.ref = "j2html" }
 quarkus-bom = { module = "io.quarkus.platform:quarkus-bom", version.ref = "quarkusPlatformVersion" }
+quarkus-s3 = { module =  "io.quarkiverse.amazonservices:quarkus-amazon-services-bom", version.ref="quarkusS3Version"}
 
 [plugins]
 quarkus = { id = "io.quarkus", version.ref="quarkusPluginVersion" }
