@@ -28,4 +28,8 @@ public record RoomUsage(
     public RoomID key() {
         return new RoomID(venue, floor, name);
     }
+
+    public String label(){
+        return activity();
+    }
 }

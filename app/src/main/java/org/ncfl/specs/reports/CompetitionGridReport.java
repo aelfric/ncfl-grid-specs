@@ -80,7 +80,9 @@ public class CompetitionGridReport implements Reporter {
         List<String> unknown = new LinkedList<>();
 
         for (String activity : value.split(",")) {
-            if(activity.contains("Prelim")){
+            if(activity.contains("Prelim")) {
+                prelims.add(activity);
+            } else if(activity.contains("Speech Competition Room #")){
                 prelims.add(activity);
             } else if(activity.contains("Play-In")){
                 playIn.add(activity);

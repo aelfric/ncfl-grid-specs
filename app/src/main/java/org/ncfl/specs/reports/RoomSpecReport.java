@@ -140,22 +140,22 @@ public class RoomSpecReport implements Reporter {
         return li(
             strong(roomUsage.name()),
             text(": "),
-            text(roomUsage.activity())
+            text(roomUsage.label())
         );
     }
 
     private List<DomContent> getRoomSets(Hotel hotel) {
         return List.of(
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 19)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 20)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 21)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 22)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 23)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 24)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 25)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 26)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 27)),
-            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2025, Month.MAY, 28))
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 22)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 23)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 24)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 25)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 26)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 27)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 28)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 29)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 30)),
+            filterAndPrintRooms(hotel.roomUsage(), LocalDate.of(2026, Month.MAY, 31))
         );
     }
 
@@ -165,7 +165,7 @@ public class RoomSpecReport implements Reporter {
         Map<RoomID, List<RoomUsage>> roomMap = data
             .stream()
             .filter(u -> localDate.equals(u.date()))
-            .filter(u -> Objects.nonNull(u.activity()) && !u.activity().isEmpty())
+            .filter(u -> Objects.nonNull(u.label()) && !u.label().isEmpty())
             .collect(Collectors.groupingBy(RoomUsage::key));
 
         if (roomMap.isEmpty()) {
@@ -266,7 +266,7 @@ public class RoomSpecReport implements Reporter {
                 text("") :
                 li(
                     strong("Readerboard: "),
-                    text(usage.activity())
+                    text(usage.label())
                 );
             DomContent avNeeds = Strings.isNullOrEmpty(usage.avNeeds()) ?
                 text("") :
@@ -285,7 +285,7 @@ public class RoomSpecReport implements Reporter {
                     timeRange,
                     a(String.valueOf(roomSet))
                         .attr("href", roomSet.href()),
-                    text(" (%s)".formatted(usage.activity()))
+                    text(" (%s)".formatted(usage.label()))
                 ),
                 usage.roomSet() == RoomSet.ROOM_TURN ? null :
                     ul(
